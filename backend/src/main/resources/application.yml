@@ -1,0 +1,8 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/gamemonitoring
+    username: admin
+    password: admin
+  data:
+    jdbc:
+      dialect: postgresql
