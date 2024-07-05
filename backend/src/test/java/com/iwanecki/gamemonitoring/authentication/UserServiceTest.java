@@ -25,6 +25,9 @@ class UserServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private ScoreService scoreService;
+
     @Spy
     private UserMapperImpl userMapper;
 
@@ -54,8 +57,9 @@ class UserServiceTest {
             void createUser_WithValidParameters_ShouldSaveUserAndReturn() {
                 when(userRepository.findFirstByUsername("testuser")).thenReturn(Optional.empty());
                 when(userRepository.save(any())).then(returnsFirstArg());
+                when(scoreService.generateRandomScore()).thenReturn(42);
                 SignUpReqDto signUpReq = new SignUpReqDto("testuser", "testpassword");
-                UserDto expected = new UserDto(null, "testuser");
+                UserDto expected = new UserDto(null, "testuser", 42);
 
                 UserDto actual = userService.createUser(signUpReq);
 

@@ -9,6 +9,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final ScoreService scoreService;
 
     public UserDto createUser(SignUpReqDto signUpReq) {
         if (userRepository.findFirstByUsername(signUpReq.username().toLowerCase()).isPresent()) {
@@ -17,7 +18,8 @@ public class UserService {
 
         UserEntity userEntity = new UserEntity()
                 .setUsername(signUpReq.username().toLowerCase())
-                .setPassword(signUpReq.password());
+                .setPassword(signUpReq.password())
+                .setScore(scoreService.generateRandomScore());
 
         userEntity = userRepository.save(userEntity);
         return userMapper.mapEntityToDto(userEntity);
