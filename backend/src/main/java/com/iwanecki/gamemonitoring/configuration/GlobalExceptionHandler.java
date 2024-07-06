@@ -1,6 +1,7 @@
 package com.iwanecki.gamemonitoring.configuration;
 
 import com.iwanecki.gamemonitoring.user.UserAlreadyExistsException;
+import com.iwanecki.gamemonitoring.user.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -36,6 +37,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UserAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorDto userAlreadyExistsExceptionHandler(UserAlreadyExistsException e) {
+        return new ErrorDto(e.getMessage());
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDto userNotFoundExceptionHandler(UserNotFoundException e) {
         return new ErrorDto(e.getMessage());
     }
 

@@ -1,8 +1,8 @@
 package com.iwanecki.gamemonitoring.user;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.iwanecki.gamemonitoring.team.TeamEntity;
+import com.iwanecki.gamemonitoring.team.TeamRole;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -27,4 +27,9 @@ public class UserEntity {
 
     private Integer score;
 
+    @OneToOne
+    private TeamEntity team;
+
+    @Enumerated(EnumType.STRING)
+    private TeamRole teamRole;
 }

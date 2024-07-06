@@ -22,3 +22,38 @@ databaseChangeLog:
               - column:
                   name: score
                   type: number
+  - changeSet:
+      id: 2
+      author: Fabian Iwanecki
+      changes:
+        - createTable:
+            tableName: team
+            columns:
+              - column:
+                  name: uuid
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: varchar
+              - column:
+                  name: max_members
+                  type: number
+  - changeSet:
+      id: 3
+      author: Fabian Iwanecki
+      changes:
+        - addColumn:
+            tableName: user_
+            columns:
+              - column:
+                  name: team_uuid
+                  type: uuid
+                  constraints:
+                    referencedTableName: team
+                    referencedColumnNames: uuid
+                    foreignKeyName: fk_user_team
+              - column:
+                  name: team_role
+                  type: varchar
