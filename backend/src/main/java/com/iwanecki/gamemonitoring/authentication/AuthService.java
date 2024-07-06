@@ -1,5 +1,7 @@
 package com.iwanecki.gamemonitoring.authentication;
 
+import com.iwanecki.gamemonitoring.user.UserDto;
+import com.iwanecki.gamemonitoring.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

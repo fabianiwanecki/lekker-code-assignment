@@ -1,4 +1,4 @@
-package com.iwanecki.gamemonitoring.authentication;
+package com.iwanecki.gamemonitoring.user;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

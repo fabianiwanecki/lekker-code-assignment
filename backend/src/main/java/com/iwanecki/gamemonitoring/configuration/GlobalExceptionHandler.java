@@ -1,6 +1,6 @@
 package com.iwanecki.gamemonitoring.configuration;
 
-import com.iwanecki.gamemonitoring.authentication.UserAlreadyExistsException;
+import com.iwanecki.gamemonitoring.user.UserAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;

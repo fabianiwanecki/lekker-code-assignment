@@ -1,4 +1,4 @@
-package com.iwanecki.gamemonitoring.authentication;
+package com.iwanecki.gamemonitoring.user;
 
 import java.util.UUID;
 

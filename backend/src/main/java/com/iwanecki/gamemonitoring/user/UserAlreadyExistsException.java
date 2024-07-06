@@ -1,4 +1,4 @@
-package com.iwanecki.gamemonitoring.authentication;
+package com.iwanecki.gamemonitoring.user;
 
 public class UserAlreadyExistsException extends RuntimeException {
     public UserAlreadyExistsException(String message) {
