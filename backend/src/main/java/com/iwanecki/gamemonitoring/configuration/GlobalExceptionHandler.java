@@ -1,5 +1,6 @@
 package com.iwanecki.gamemonitoring.configuration;
 
+import com.iwanecki.gamemonitoring.team.TeamNotFoundException;
 import com.iwanecki.gamemonitoring.user.UserAlreadyExistsException;
 import com.iwanecki.gamemonitoring.user.UserNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -43,6 +44,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UserNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDto userNotFoundExceptionHandler(UserNotFoundException e) {
+        return new ErrorDto(e.getMessage());
+    }
+
+
+    @ExceptionHandler(TeamNotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDto teamNotFoundExceptionHandler(TeamNotFoundException e) {
         return new ErrorDto(e.getMessage());
     }
 

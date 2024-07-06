@@ -5,6 +5,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @RequiredArgsConstructor
 @Service
 public class TeamService {
@@ -24,5 +26,15 @@ public class TeamService {
         userService.addUserToTeam(createTeamReq.userUuid(), TeamRole.OWNER, team);
 
         return teamMapper.mapEntitytoDto(team);
+    }
+
+    @Transactional
+    public void deleteTeam(UUID uuid) {
+        if (teamRepository.findById(uuid).isEmpty()) {
+            throw new TeamNotFoundException("Team not found");
+        }
+
+        userService.removeTeam(uuid);
+        teamRepository.deleteById(uuid);
     }
 }

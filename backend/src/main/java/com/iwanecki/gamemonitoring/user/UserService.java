@@ -60,4 +60,8 @@ public class UserService {
         user.setTeam(team).setTeamRole(teamRole);
         userRepository.save(user);
     }
+
+    public void removeTeam(UUID teamUuid) {
+        userRepository.removeTeam(teamUuid);
+    }
 }
