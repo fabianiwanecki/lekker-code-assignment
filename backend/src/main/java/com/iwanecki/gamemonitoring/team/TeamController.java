@@ -1,6 +1,9 @@
 package com.iwanecki.gamemonitoring.team;
 
+import com.iwanecki.gamemonitoring.shared.PageDto;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,6 +35,11 @@ public class TeamController {
     public ResponseEntity<Void> deleteTeam(@PathVariable UUID uuid) {
         teamService.deleteTeam(uuid);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping
+    public PageDto<TeamDto> listTeams(@Min(1) @RequestParam Integer page, @Min(1) @Max(100) @RequestParam Integer size) {
+        return teamService.listTeams(page, size);
     }
 
 }

@@ -1,8 +1,11 @@
 package com.iwanecki.gamemonitoring.team;
 
+import com.iwanecki.gamemonitoring.shared.PageDto;
 import com.iwanecki.gamemonitoring.user.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -61,5 +64,12 @@ public class TeamService {
         team = teamRepository.save(team);
 
         return teamMapper.mapEntitytoDto(team);
+    }
+
+    public PageDto<TeamDto> listTeams(Integer page, Integer size) {
+        Pageable pageable = Pageable.ofSize(size).withPage(page - 1);
+        Page<TeamEntity> teams = teamRepository.findAll(pageable);
+
+        return new PageDto<>(page, teams.getContent().size(), teams.getTotalElements(), teamMapper.mapEntitytoDto(teams.getContent()));
     }
 }

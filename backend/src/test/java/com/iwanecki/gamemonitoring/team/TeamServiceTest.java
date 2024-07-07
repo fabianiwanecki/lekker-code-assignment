@@ -1,5 +1,7 @@
 package com.iwanecki.gamemonitoring.team;
 
+import com.iwanecki.gamemonitoring.shared.PageDto;
+import com.iwanecki.gamemonitoring.user.UserDto;
 import com.iwanecki.gamemonitoring.user.UserEntity;
 import com.iwanecki.gamemonitoring.user.UserService;
 import org.junit.jupiter.api.Nested;
@@ -9,6 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -126,5 +130,28 @@ class TeamServiceTest {
             assertEquals(expected, actual);
         }
 
+    }
+
+    @Nested
+    class ListUsersTest {
+
+        @Test
+        void listUsers_WithValidParameters_ShouldReturnUserList() {
+            when(teamRepository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(List.of(
+                    new TeamEntity().setName("Team1").setMaxMembers(10),
+                    new TeamEntity().setName("Team2").setMaxMembers(20),
+                    new TeamEntity().setName("Team3").setMaxMembers(14)
+            ), Pageable.ofSize(3).withPage(0), 5));
+
+            PageDto<TeamDto> actual = teamService.listTeams(1, 3);
+
+            PageDto<TeamDto> expected = new PageDto<>(1, 3, 5, List.of(
+                    new TeamDto(null, "Team1", 10),
+                    new TeamDto(null, "Team2", 20),
+                    new TeamDto(null, "Team3", 14)
+            ));
+
+            assertEquals(expected, actual);
+        }
     }
 }
