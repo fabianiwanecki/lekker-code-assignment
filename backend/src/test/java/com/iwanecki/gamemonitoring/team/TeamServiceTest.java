@@ -3,16 +3,18 @@ package com.iwanecki.gamemonitoring.team;
 import com.iwanecki.gamemonitoring.shared.PageDto;
 import com.iwanecki.gamemonitoring.user.UserDto;
 import com.iwanecki.gamemonitoring.user.UserEntity;
+import com.iwanecki.gamemonitoring.user.UserMapperImpl;
 import com.iwanecki.gamemonitoring.user.UserService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class TeamServiceTest {
@@ -36,8 +39,17 @@ class TeamServiceTest {
     @Mock
     private UserService userService;
 
-    @Spy
     private TeamMapperImpl teamMapper;
+
+    @BeforeEach
+    void setup() {
+        teamMapper = new TeamMapperImpl(new UserMapperImpl());
+        ReflectionTestUtils.setField(
+                teamService,
+                "teamMapper",
+                teamMapper
+        );
+    }
 
     @Nested
     class CreateTeamTest {
@@ -133,10 +145,10 @@ class TeamServiceTest {
     }
 
     @Nested
-    class ListUsersTest {
+    class ListTeamsTest {
 
         @Test
-        void listUsers_WithValidParameters_ShouldReturnUserList() {
+        void listTeams_WithValidParameters_ShouldReturnTeamsList() {
             when(teamRepository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(List.of(
                     new TeamEntity().setName("Team1").setMaxMembers(10),
                     new TeamEntity().setName("Team2").setMaxMembers(20),
@@ -152,6 +164,34 @@ class TeamServiceTest {
             ));
 
             assertEquals(expected, actual);
+        }
+    }
+
+    @Nested
+    class FetchTeamDetailsTest {
+
+        @Test
+        void fetchTeamDetails_WithValidParameters_ShouldReturnTeamDetails() {
+            UUID teamUuid = UUID.fromString("366c91cb-be63-40bc-be7e-7105aefc7efc");
+            when(teamRepository.findById(teamUuid)).thenReturn(Optional.of(new TeamEntity()
+                    .setName("TestTeam")
+                    .setMaxMembers(12)
+                    .setMembers(List.of(new UserEntity()
+                            .setUsername("TestUser")
+                            .setScore(144)))));
+
+            TeamWithMembersDto actual = teamService.fetchTeamDetails(teamUuid);
+
+            TeamWithMembersDto expected = new TeamWithMembersDto(null, "TestTeam", 12, List.of(new UserDto(null, "TestUser", 144)));
+
+            assertEquals(expected, actual);
+        }
+        @Test
+        void fetchTeamDetails_WithTeamNotFound_ShouldThrow() {
+            UUID teamUuid = UUID.fromString("366c91cb-be63-40bc-be7e-7105aefc7efc");
+            when(teamRepository.findById(teamUuid)).thenReturn(Optional.empty());
+
+            assertThrows(TeamNotFoundException.class, () -> teamService.fetchTeamDetails(teamUuid));
         }
     }
 }

@@ -8,7 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -35,7 +34,7 @@ public class TeamService {
     @Transactional
     public void deleteTeam(UUID uuid) {
         if (teamRepository.findById(uuid).isEmpty()) {
-            throw new TeamNotFoundException("Team not found");
+            throw new TeamNotFoundException();
         }
 
         userService.removeTeam(uuid);
@@ -43,12 +42,7 @@ public class TeamService {
     }
 
     public TeamDto updateTeam(UUID uuid, UpdateTeamReqDto updateTeamReq) {
-        Optional<TeamEntity> teamEntityOptional = teamRepository.findById(uuid);
-        if (teamEntityOptional.isEmpty()) {
-            throw new TeamNotFoundException("Team not found");
-        }
-
-        TeamEntity team = teamEntityOptional.get();
+        TeamEntity team = teamRepository.findById(uuid).orElseThrow(TeamNotFoundException::new);
 
         if (updateTeamReq.maxMembers() != null) {
             if (team.getMembers().size() > updateTeamReq.maxMembers()) {
@@ -71,5 +65,11 @@ public class TeamService {
         Page<TeamEntity> teams = teamRepository.findAll(pageable);
 
         return new PageDto<>(page, teams.getContent().size(), teams.getTotalElements(), teamMapper.mapEntitytoDto(teams.getContent()));
+    }
+
+    public TeamWithMembersDto fetchTeamDetails(UUID uuid) {
+        TeamEntity team = teamRepository.findById(uuid).orElseThrow(TeamNotFoundException::new);
+
+        return teamMapper.mapEntitytoDtoWithMembers(team);
     }
 }

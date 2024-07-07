@@ -31,6 +31,11 @@ public class TeamController {
         return teamService.updateTeam(uuid, updateTeamReq);
     }
 
+    @GetMapping("{uuid}")
+    public TeamWithMembersDto fetchTeamDetails(@PathVariable UUID uuid) {
+        return teamService.fetchTeamDetails(uuid);
+    }
+
     @DeleteMapping("{uuid}")
     public ResponseEntity<Void> deleteTeam(@PathVariable UUID uuid) {
         teamService.deleteTeam(uuid);
