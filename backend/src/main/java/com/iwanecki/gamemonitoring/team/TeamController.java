@@ -23,6 +23,11 @@ public class TeamController {
         return teamService.createTeam(createTeamReq);
     }
 
+    @PutMapping("{uuid}")
+    public TeamDto updateTeam(@PathVariable UUID uuid, @Valid @NotNull @RequestBody UpdateTeamReqDto updateTeamReq) {
+        return teamService.updateTeam(uuid, updateTeamReq);
+    }
+
     @DeleteMapping("{uuid}")
     public ResponseEntity<Void> deleteTeam(@PathVariable UUID uuid) {
         teamService.deleteTeam(uuid);

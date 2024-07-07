@@ -5,6 +5,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -36,5 +37,29 @@ public class TeamService {
 
         userService.removeTeam(uuid);
         teamRepository.deleteById(uuid);
+    }
+
+    public TeamDto updateTeam(UUID uuid, UpdateTeamReqDto updateTeamReq) {
+        Optional<TeamEntity> teamEntityOptional = teamRepository.findById(uuid);
+        if (teamEntityOptional.isEmpty()) {
+            throw new TeamNotFoundException("Team not found");
+        }
+
+        TeamEntity team = teamEntityOptional.get();
+
+        if (updateTeamReq.maxMembers() != null) {
+            if (team.getMembers().size() > updateTeamReq.maxMembers()) {
+                throw new TeamUpdateException("Cannot reduce max members below the current number of members");
+            }
+            team.setMaxMembers(updateTeamReq.maxMembers());
+        }
+
+        if (updateTeamReq.name() != null) {
+            team.setName(updateTeamReq.name());
+        }
+
+        team = teamRepository.save(team);
+
+        return teamMapper.mapEntitytoDto(team);
     }
 }

@@ -27,7 +27,7 @@ public class UserEntity {
 
     private Integer score;
 
-    @OneToOne
+    @ManyToOne
     private TeamEntity team;
 
     @Enumerated(EnumType.STRING)
