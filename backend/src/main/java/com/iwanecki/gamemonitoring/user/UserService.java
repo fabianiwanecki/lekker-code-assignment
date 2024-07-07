@@ -8,6 +8,7 @@ import com.iwanecki.gamemonitoring.team.TeamRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -21,6 +22,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final ScoreService scoreService;
+    private final PasswordEncoder passwordEncoder;
 
     public UserDto createUser(SignUpReqDto signUpReq) {
         if (userRepository.findFirstByUsername(signUpReq.username().toLowerCase()).isPresent()) {
@@ -29,7 +31,7 @@ public class UserService {
 
         UserEntity userEntity = new UserEntity()
                 .setUsername(signUpReq.username().toLowerCase())
-                .setPassword(signUpReq.password())
+                .setPassword(passwordEncoder.encode(signUpReq.password()))
                 .setScore(scoreService.generateRandomScore());
 
         userEntity = userRepository.save(userEntity);

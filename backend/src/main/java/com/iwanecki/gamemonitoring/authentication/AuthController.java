@@ -18,4 +18,8 @@ public class AuthController {
         return authService.signUp(signUpReq);
     }
 
+    @PostMapping("sign-in")
+    public SignInResDto signin(@Valid @RequestBody SignInReqDto signInReq) {
+        return authService.signIn(signInReq);
+    }
 }

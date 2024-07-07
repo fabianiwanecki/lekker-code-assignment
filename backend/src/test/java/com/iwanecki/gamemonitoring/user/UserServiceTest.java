@@ -12,6 +12,7 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,6 +35,9 @@ class UserServiceTest {
 
     @Mock
     private ScoreService scoreService;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @Spy
     private UserMapperImpl userMapper;

@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,16 +27,19 @@ public class TeamController {
         return teamService.createTeam(createTeamReq);
     }
 
+    @PreAuthorize("hasAuthority('OWNER_' + #uuid)")
     @PutMapping("{uuid}")
     public TeamDto updateTeam(@PathVariable UUID uuid, @Valid @NotNull @RequestBody UpdateTeamReqDto updateTeamReq) {
         return teamService.updateTeam(uuid, updateTeamReq);
     }
+
 
     @GetMapping("{uuid}")
     public TeamWithMembersDto fetchTeamDetails(@PathVariable UUID uuid) {
         return teamService.fetchTeamDetails(uuid);
     }
 
+    @PreAuthorize("hasAuthority('OWNER_' + #uuid)")
     @DeleteMapping("{uuid}")
     public ResponseEntity<Void> deleteTeam(@PathVariable UUID uuid) {
         teamService.deleteTeam(uuid);

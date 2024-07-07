@@ -5,6 +5,7 @@ import com.iwanecki.gamemonitoring.team.TeamUpdateException;
 import com.iwanecki.gamemonitoring.user.UserAlreadyExistsException;
 import com.iwanecki.gamemonitoring.user.UserNotFoundException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,6 +23,13 @@ public class GlobalExceptionHandler {
     public ErrorDto genericExceptionHandler(Exception e) {
         return new ErrorDto(e.getMessage());
     }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorDto authorizationDeniedExceptionHandler(AuthorizationDeniedException e) {
+        return new ErrorDto(e.getMessage());
+    }
+
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
