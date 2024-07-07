@@ -10,8 +10,10 @@ import java.util.List;
 public interface TeamMapper {
 
     TeamDto mapEntitytoDto(TeamEntity entity);
+    TeamDto mapEntitytoDtoDetailed(TeamDetailedEntity entity);
 
     TeamWithMembersDto mapEntitytoDtoWithMembers(TeamEntity entity);
     List<TeamDto> mapEntitytoDto(List<TeamEntity> entity);
+    List<TeamDto> mapEntitytoDtoDetailed(List<TeamDetailedEntity> entity);
 
 }

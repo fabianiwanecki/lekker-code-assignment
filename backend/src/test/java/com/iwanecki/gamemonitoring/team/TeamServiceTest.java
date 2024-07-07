@@ -37,6 +37,9 @@ class TeamServiceTest {
     private TeamRepository teamRepository;
 
     @Mock
+    private TeamDetailedRepository teamDetailedRepository;
+
+    @Mock
     private UserService userService;
 
     private TeamMapperImpl teamMapper;
@@ -59,7 +62,7 @@ class TeamServiceTest {
             when(teamRepository.save(any())).then(returnsFirstArg());
             TeamDto actual = teamService.createTeam(new CreateTeamReqDto(UUID.fromString("3f79686b-9e99-4671-9d69-488fa9e0778d"), "TestTeam", 10));
 
-            TeamDto expected = new TeamDto(null, "TestTeam", 10);
+            TeamDto expected = new TeamDto(null, "TestTeam", 10, null, null, null);
 
             assertEquals(expected, actual);
         }
@@ -137,7 +140,7 @@ class TeamServiceTest {
             UpdateTeamReqDto updateTeamReq = new UpdateTeamReqDto("TestTeam", 4);
             TeamDto actual = teamService.updateTeam(teamUuid, updateTeamReq);
 
-            TeamDto expected = new TeamDto(null, "TestTeam", 4);
+            TeamDto expected = new TeamDto(null, "TestTeam", 4, null, null, null);
 
             assertEquals(expected, actual);
         }
@@ -149,18 +152,18 @@ class TeamServiceTest {
 
         @Test
         void listTeams_WithValidParameters_ShouldReturnTeamsList() {
-            when(teamRepository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(List.of(
-                    new TeamEntity().setName("Team1").setMaxMembers(10),
-                    new TeamEntity().setName("Team2").setMaxMembers(20),
-                    new TeamEntity().setName("Team3").setMaxMembers(14)
+            when(teamDetailedRepository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(List.of(
+                    new TeamDetailedEntity().setName("Team1").setMaxMembers(10),
+                    new TeamDetailedEntity().setName("Team2").setMaxMembers(20),
+                    new TeamDetailedEntity().setName("Team3").setMaxMembers(14)
             ), Pageable.ofSize(3).withPage(0), 5));
 
             PageDto<TeamDto> actual = teamService.listTeams(1, 3);
 
             PageDto<TeamDto> expected = new PageDto<>(1, 3, 5, List.of(
-                    new TeamDto(null, "Team1", 10),
-                    new TeamDto(null, "Team2", 20),
-                    new TeamDto(null, "Team3", 14)
+                    new TeamDto(null, "Team1", 10, null, null, null),
+                    new TeamDto(null, "Team2", 20, null, null, null),
+                    new TeamDto(null, "Team3", 14, null, null, null)
             ));
 
             assertEquals(expected, actual);

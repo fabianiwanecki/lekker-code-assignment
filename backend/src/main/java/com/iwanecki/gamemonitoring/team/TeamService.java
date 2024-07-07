@@ -15,6 +15,7 @@ import java.util.UUID;
 public class TeamService {
 
     private final TeamRepository teamRepository;
+    private final TeamDetailedRepository teamDetailedRepository;
     private final UserService userService;
     private final TeamMapper teamMapper;
 
@@ -62,9 +63,8 @@ public class TeamService {
 
     public PageDto<TeamDto> listTeams(Integer page, Integer size) {
         Pageable pageable = Pageable.ofSize(size).withPage(page - 1);
-        Page<TeamEntity> teams = teamRepository.findAll(pageable);
-
-        return new PageDto<>(page, teams.getContent().size(), teams.getTotalElements(), teamMapper.mapEntitytoDto(teams.getContent()));
+        Page<TeamDetailedEntity> teams = teamDetailedRepository.findAll(pageable);
+        return new PageDto<>(page, teams.getContent().size(), teams.getTotalElements(), teamMapper.mapEntitytoDtoDetailed(teams.getContent()));
     }
 
     public TeamWithMembersDto fetchTeamDetails(UUID uuid) {
