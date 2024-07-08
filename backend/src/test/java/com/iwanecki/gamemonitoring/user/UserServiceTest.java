@@ -150,7 +150,11 @@ class UserServiceTest {
         void addUserToTeam_WithValidParams_ShouldAddUserToTeam() {
             UUID userUuid = UUID.fromString("d6bfec9b-2d61-4f0e-8f8e-1b8b80ddc6a9");
             UUID teamUuid = UUID.fromString("d6bfec9b-2d61-4f0e-8f8e-1b8b80ddc6a9");
-            TeamEntity team = new TeamEntity().setName("TestTeam").setMaxMembers(12).setUuid(UUID.fromString("bd5e089f-d804-4721-8114-f99e55826d4e"));
+            TeamEntity team = new TeamEntity()
+                    .setName("TestTeam")
+                    .setMaxMembers(12)
+                    .setUuid(UUID.fromString("bd5e089f-d804-4721-8114-f99e55826d4e"))
+                    .setMembers(List.of());;
             UserEntity userEntity = new UserEntity().setUsername("TestUser").setPassword("Test").setScore(12);
             when(userRepository.findById(userUuid)).thenReturn(Optional.of(userEntity));
             when(teamService.fetchByUuid(teamUuid)).thenReturn(team);
@@ -162,6 +166,22 @@ class UserServiceTest {
                 assertNotNull(userEntityArgumentCaptor.getValue().getTeam());
                 assertEquals(TeamRole.OWNER, userEntityArgumentCaptor.getValue().getTeamRole());
             });
+        }
+
+        @Test
+        void addUserToTeam_WithTeamIsFull_ShouldThrow() {
+            UUID userUuid = UUID.fromString("d6bfec9b-2d61-4f0e-8f8e-1b8b80ddc6a9");
+            UUID teamUuid = UUID.fromString("d6bfec9b-2d61-4f0e-8f8e-1b8b80ddc6a9");
+            TeamEntity team = new TeamEntity()
+                    .setName("TestTeam")
+                    .setMaxMembers(1)
+                    .setUuid(UUID.fromString("bd5e089f-d804-4721-8114-f99e55826d4e"))
+                    .setMembers(List.of(new UserEntity()));
+            UserEntity userEntity = new UserEntity().setUsername("TestUser").setPassword("Test").setScore(12);
+            when(userRepository.findById(userUuid)).thenReturn(Optional.of(userEntity));
+            when(teamService.fetchByUuid(teamUuid)).thenReturn(team);
+
+            assertThrows(TeamAlreadyFullException.class, () -> userService.addUserToTeam(userUuid, TeamRole.OWNER, teamUuid));
         }
 
         @Test
@@ -185,7 +205,11 @@ class UserServiceTest {
         @Test
         void addUserToTeamUsername_WithValidParams_ShouldAddUserToTeam() {
             UUID teamUuid = UUID.fromString("d6bfec9b-2d61-4f0e-8f8e-1b8b80ddc6a9");
-            TeamEntity team = new TeamEntity().setName("TestTeam").setMaxMembers(12).setUuid(UUID.fromString("bd5e089f-d804-4721-8114-f99e55826d4e"));
+            TeamEntity team = new TeamEntity()
+                    .setName("TestTeam")
+                    .setMaxMembers(12)
+                    .setUuid(UUID.fromString("bd5e089f-d804-4721-8114-f99e55826d4e"))
+                    .setMembers(List.of());
             UserEntity userEntity = new UserEntity().setUsername("TestUser").setPassword("Test").setScore(12);
             when(userRepository.findFirstByUsername("TestUser")).thenReturn(Optional.of(userEntity));
             when(teamService.fetchByUuid(teamUuid)).thenReturn(team);
