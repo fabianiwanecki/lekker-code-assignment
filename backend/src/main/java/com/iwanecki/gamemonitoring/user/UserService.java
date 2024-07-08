@@ -3,6 +3,7 @@ package com.iwanecki.gamemonitoring.user;
 import com.iwanecki.gamemonitoring.authentication.ScoreService;
 import com.iwanecki.gamemonitoring.authentication.SignUpReqDto;
 import com.iwanecki.gamemonitoring.shared.PageDto;
+import com.iwanecki.gamemonitoring.team.TeamAlreadyFullException;
 import com.iwanecki.gamemonitoring.team.TeamEntity;
 import com.iwanecki.gamemonitoring.team.TeamRole;
 import com.iwanecki.gamemonitoring.team.TeamService;
@@ -96,6 +97,10 @@ public class UserService {
         }
 
         TeamEntity team = teamService.fetchByUuid(teamUuid);
+
+        if (team.getMembers().size() >= team.getMaxMembers()) {
+            throw new TeamAlreadyFullException("The team is already full");
+        }
 
         user.setTeam(team).setTeamRole(teamRole);
         userRepository.save(user);

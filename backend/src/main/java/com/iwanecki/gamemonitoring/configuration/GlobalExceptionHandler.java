@@ -1,9 +1,6 @@
 package com.iwanecki.gamemonitoring.configuration;
 
-import com.iwanecki.gamemonitoring.team.TeamNotFoundException;
-import com.iwanecki.gamemonitoring.team.TeamRequestIsPendingException;
-import com.iwanecki.gamemonitoring.team.TeamRequestNotFoundException;
-import com.iwanecki.gamemonitoring.team.TeamUpdateException;
+import com.iwanecki.gamemonitoring.team.*;
 import com.iwanecki.gamemonitoring.user.AlreadyTeamMemberException;
 import com.iwanecki.gamemonitoring.user.UserAlreadyExistsException;
 import com.iwanecki.gamemonitoring.user.UserNotFoundException;
@@ -87,6 +84,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AlreadyTeamMemberException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDto alreadyTeamMemberExceptionHandler(AlreadyTeamMemberException e) {
+        return new ErrorDto(e.getMessage());
+    }
+
+    @ExceptionHandler(TeamAlreadyFullException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDto teamAlreadyFullExceptionHandler(TeamAlreadyFullException e) {
         return new ErrorDto(e.getMessage());
     }
 
