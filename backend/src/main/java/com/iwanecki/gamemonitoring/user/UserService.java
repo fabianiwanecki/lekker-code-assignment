@@ -5,12 +5,16 @@ import com.iwanecki.gamemonitoring.authentication.SignUpReqDto;
 import com.iwanecki.gamemonitoring.shared.PageDto;
 import com.iwanecki.gamemonitoring.team.TeamEntity;
 import com.iwanecki.gamemonitoring.team.TeamRole;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,7 +27,10 @@ public class UserService {
     private final UserMapper userMapper;
     private final ScoreService scoreService;
     private final PasswordEncoder passwordEncoder;
+    private final UserRankRepository userRankRepository;
 
+
+    @Transactional
     public UserDto createUser(SignUpReqDto signUpReq) {
         if (userRepository.findFirstByUsername(signUpReq.username().toLowerCase()).isPresent()) {
             throw new UserAlreadyExistsException("A user with this username already exists");
@@ -34,16 +41,38 @@ public class UserService {
                 .setPassword(passwordEncoder.encode(signUpReq.password()))
                 .setScore(scoreService.generateRandomScore());
 
+
         userEntity = userRepository.save(userEntity);
-        return userMapper.mapEntityToDto(userEntity);
+
+        userRankRepository.addUserScore(userEntity.getUuid(), userEntity.getScore());
+
+        return userMapper.mapUserEntityToUserDto(userEntity);
     }
 
-    public PageDto<UserDto> listUsers(Integer page, Integer size) {
+    public List<UserWithRankDto> fetchMultipleUsersWithRank(List<UUID> userUuidList) {
+        List<UserEntity> users = userRepository.findAllByUuidIn(userUuidList);
 
-        Pageable pageable = Pageable.ofSize(size).withPage(page - 1);
+        // Recreate uuid list from db list to remove non-existent uuids from initial list
+        List<UUID> userUuidListFromRepository = users.stream().map(UserEntity::getUuid).toList();
+
+        List<Long> rankList = userRankRepository.listUserRanks(userUuidListFromRepository);
+
+        return userMapper.mapUserEntityAndRankToUserWithRankDto(users, rankList);
+    }
+
+    public PageDto<UserWithRankAndTeamDto> listUsers(Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("score", "username"));
         Page<UserEntity> users = userRepository.findAll(pageable);
 
-        return new PageDto<>(page, users.getContent().size(), users.getTotalElements(), userMapper.mapEntityToDto(users.getContent()));
+        List<UUID> userUuidList = users.getContent().stream().map(UserEntity::getUuid).toList();
+
+        List<Long> rankList = userRankRepository.listUserRanks(userUuidList);
+
+        return new PageDto<>(page, users.getContent().size(), users.getTotalElements(), userMapper.mapUserEntityAndRankToUserWithRankAndTeamDto(users.getContent(), rankList));
+    }
+
+    public void removeTeam(UUID teamUuid) {
+        userRepository.removeTeam(teamUuid);
     }
 
     public void addUserToTeam(UUID userUuid, TeamRole teamRole, TeamEntity team) {
@@ -53,17 +82,25 @@ public class UserService {
             throw new UserNotFoundException("The user doesn't exists");
         }
 
-        UserEntity user = userOptional.get();
+        addUserToTeam(userOptional.get(), teamRole, team);
+    }
 
+    public void addUserToTeam(String username, TeamRole teamRole, TeamEntity team) {
+        Optional<UserEntity> userOptional = userRepository.findFirstByUsername(username);
+
+        if (userOptional.isEmpty()) {
+            throw new UserNotFoundException("The user doesn't exists");
+        }
+
+        addUserToTeam(userOptional.get(), teamRole, team);
+    }
+
+    public void addUserToTeam(UserEntity user, TeamRole teamRole, TeamEntity team) {
         if (user.getTeam() != null) {
             throw new AlreadyTeamMemberException("The user is already member of a team");
         }
 
         user.setTeam(team).setTeamRole(teamRole);
         userRepository.save(user);
-    }
-
-    public void removeTeam(UUID teamUuid) {
-        userRepository.removeTeam(teamUuid);
     }
 }

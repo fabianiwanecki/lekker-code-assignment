@@ -19,7 +19,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public PageDto<UserDto> listUsers(@Min(1) @RequestParam Integer page, @Min(1) @Max(100) @RequestParam Integer size) {
+    public PageDto<UserWithRankAndTeamDto> listUsers(@Min(1) @RequestParam Integer page, @Min(1) @Max(100) @RequestParam Integer size) {
         return userService.listUsers(page, size);
     }
 }

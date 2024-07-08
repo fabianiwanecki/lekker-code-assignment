@@ -25,8 +25,8 @@ public class TeamController {
     private final TeamRequestService teamRequestService;
 
     @PostMapping
-    public TeamDto createTeam(@Valid @NotNull @RequestBody CreateTeamReqDto createTeamReq) {
-        return teamService.createTeam(createTeamReq);
+    public TeamDto createTeam(@Valid @NotNull @RequestBody CreateTeamReqDto createTeamReq, Authentication authentication) {
+        return teamService.createTeam(createTeamReq, authentication.getName());
     }
 
     @PreAuthorize("hasAuthority('OWNER_' + #uuid)")
@@ -49,7 +49,7 @@ public class TeamController {
     }
 
     @GetMapping
-    public PageDto<TeamDto> listTeams(@Min(1) @RequestParam Integer page, @Min(1) @Max(100) @RequestParam Integer size) {
+    public PageDto<TeamDetailedDto> listTeams(@Min(1) @RequestParam Integer page, @Min(1) @Max(100) @RequestParam Integer size) {
         return teamService.listTeams(page, size);
     }
 
@@ -68,7 +68,7 @@ public class TeamController {
 
     @DeleteMapping("{teamUuid}/request")
     public ResponseEntity<Void> deleteTeamRequest(@PathVariable UUID teamUuid, Authentication authentication) {
-        teamRequestService.deleteTeamRequest(teamUuid, authentication.getName());
+        teamRequestService.deleteTeamRequest(teamUuid, UUID.fromString(authentication.getName()));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

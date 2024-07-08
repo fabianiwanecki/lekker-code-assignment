@@ -6,8 +6,11 @@ spring:
   data:
     jdbc:
       dialect: postgresql
+    redis:
+      host: localhost
+      port: 6379
   jpa:
-    show-sql: true
+    show-sql: false
 
 jwt:
   secret: 5856dde068735f8d962a56a0743a94e8858ea330ef03161abad043df3c8c8427

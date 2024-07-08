@@ -24,6 +24,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorDto genericExceptionHandler(Exception e) {
+        e.printStackTrace();
         return new ErrorDto(e.getMessage());
     }
 

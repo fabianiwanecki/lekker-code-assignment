@@ -49,8 +49,8 @@ public class TeamRequestService {
         teamRequestRepository.deleteById(answerTeamRequestReq.userUuid());
     }
 
-    public void deleteTeamRequest(UUID teamUuid, String username) {
-        UserEntity user = userRepository.findFirstByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found"));
+    public void deleteTeamRequest(UUID teamUuid, UUID userUUid) {
+        UserEntity user = userRepository.findById(userUUid).orElseThrow(() -> new UserNotFoundException("User not found"));
 
         if (teamRequestRepository.findFirstByUserUuidAndTeamUuid(user.getUuid(), teamUuid).isEmpty()) {
             throw new TeamRequestNotFoundException("The user doesn't have a pending request for this team");

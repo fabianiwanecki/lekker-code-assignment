@@ -1,20 +1,16 @@
 package com.iwanecki.gamemonitoring.team;
 
 import com.iwanecki.gamemonitoring.shared.PageDto;
-import com.iwanecki.gamemonitoring.user.UserDto;
-import com.iwanecki.gamemonitoring.user.UserEntity;
-import com.iwanecki.gamemonitoring.user.UserMapperImpl;
-import com.iwanecki.gamemonitoring.user.UserService;
-import org.junit.jupiter.api.BeforeEach;
+import com.iwanecki.gamemonitoring.user.*;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,17 +41,8 @@ class TeamServiceTest {
     @Mock
     private UserService userService;
 
+    @Spy
     private TeamMapperImpl teamMapper;
-
-    @BeforeEach
-    void setup() {
-        teamMapper = new TeamMapperImpl(new UserMapperImpl());
-        ReflectionTestUtils.setField(
-                teamService,
-                "teamMapper",
-                teamMapper
-        );
-    }
 
     @Nested
     class CreateTeamTest {
@@ -63,9 +50,9 @@ class TeamServiceTest {
         @Test
         void createTeam_WithValidParams_ShouldReturnTeam() {
             when(teamRepository.save(any())).then(returnsFirstArg());
-            TeamDto actual = teamService.createTeam(new CreateTeamReqDto(UUID.fromString("3f79686b-9e99-4671-9d69-488fa9e0778d"), "TestTeam", 10));
+            TeamDto actual = teamService.createTeam(new CreateTeamReqDto("TestTeam", 10), "TestUser");
 
-            TeamDto expected = new TeamDto(null, "TestTeam", 10, null, null, null);
+            TeamDto expected = new TeamDto(null, "TestTeam", 10);
 
             assertEquals(expected, actual);
         }
@@ -75,9 +62,9 @@ class TeamServiceTest {
             TeamEntity team = new TeamEntity().setName("TestTeam").setMaxMembers(10);
             when(teamRepository.save(any())).thenReturn(team);
 
-            teamService.createTeam(new CreateTeamReqDto(UUID.fromString("3f79686b-9e99-4671-9d69-488fa9e0778d"), "TestTeam", 10));
+            teamService.createTeam(new CreateTeamReqDto( "TestTeam", 10), "TestUser");
 
-            verify(userService).addUserToTeam(UUID.fromString("3f79686b-9e99-4671-9d69-488fa9e0778d"), TeamRole.OWNER, team);
+            verify(userService).addUserToTeam("TestUser", TeamRole.OWNER, team);
         }
     }
 
@@ -143,7 +130,7 @@ class TeamServiceTest {
             UpdateTeamReqDto updateTeamReq = new UpdateTeamReqDto("TestTeam", 4);
             TeamDto actual = teamService.updateTeam(teamUuid, updateTeamReq);
 
-            TeamDto expected = new TeamDto(null, "TestTeam", 4, null, null, null);
+            TeamDto expected = new TeamDto(null, "TestTeam", 4);
 
             assertEquals(expected, actual);
         }
@@ -161,12 +148,12 @@ class TeamServiceTest {
                     new TeamDetailedEntity().setName("Team3").setMaxMembers(14)
             ), Pageable.ofSize(3).withPage(0), 5));
 
-            PageDto<TeamDto> actual = teamService.listTeams(1, 3);
+            PageDto<TeamDetailedDto> actual = teamService.listTeams(1, 3);
 
-            PageDto<TeamDto> expected = new PageDto<>(1, 3, 5, List.of(
-                    new TeamDto(null, "Team1", 10, null, null, null),
-                    new TeamDto(null, "Team2", 20, null, null, null),
-                    new TeamDto(null, "Team3", 14, null, null, null)
+            PageDto<TeamDetailedDto> expected = new PageDto<>(1, 3, 5, List.of(
+                    new TeamDetailedDto(null, "Team1", 10, null, null, null),
+                    new TeamDetailedDto(null, "Team2", 20, null, null, null),
+                    new TeamDetailedDto(null, "Team3", 14, null, null, null)
             ));
 
             assertEquals(expected, actual);
@@ -185,10 +172,11 @@ class TeamServiceTest {
                     .setMembers(List.of(new UserEntity()
                             .setUsername("TestUser")
                             .setScore(144)))));
+            when(userService.fetchMultipleUsersWithRank(any())).thenReturn(List.of(new UserWithRankDto(null, "TestUser", 144, 1L)));
 
             TeamWithMembersDto actual = teamService.fetchTeamDetails(teamUuid);
 
-            TeamWithMembersDto expected = new TeamWithMembersDto(null, "TestTeam", 12, List.of(new UserDto(null, "TestUser", 144)));
+            TeamWithMembersDto expected = new TeamWithMembersDto(null, "TestTeam", 12, List.of(new UserWithRankDto(null, "TestUser", 144, 1L)));
 
             assertEquals(expected, actual);
         }

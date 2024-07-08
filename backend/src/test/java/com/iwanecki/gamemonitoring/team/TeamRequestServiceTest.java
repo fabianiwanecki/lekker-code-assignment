@@ -89,31 +89,32 @@ class TeamRequestServiceTest {
         @Test
         void deleteTeamRequest_WithUserNotFound_ShouldThrow() {
             UUID teamUuid = UUID.fromString("91b179f6-154a-4449-8709-616d1b58f7f3");
-            when(userRepository.findFirstByUsername("TestUser")).thenReturn(Optional.empty());
+            UUID userUuid = UUID.fromString("67a0981f-c13a-4972-878c-3da1e28ef82c");
+            when(userRepository.findById(userUuid)).thenReturn(Optional.empty());
 
             assertThrows(UserNotFoundException.class, () ->
-                    teamRequestService.deleteTeamRequest(teamUuid, "TestUser"));
+                    teamRequestService.deleteTeamRequest(teamUuid, userUuid));
         }
 
         @Test
         void deleteTeamRequest_WithNoPendingRequest_ShouldThrow() {
             UUID teamUuid = UUID.fromString("91b179f6-154a-4449-8709-616d1b58f7f3");
             UUID userUuid = UUID.fromString("f30595c9-8c6b-4273-8245-9d6fd39d16f2");
-            when(userRepository.findFirstByUsername("TestUser")).thenReturn(Optional.of(new UserEntity().setUuid(userUuid)));
+            when(userRepository.findById(userUuid)).thenReturn(Optional.of(new UserEntity().setUuid(userUuid)));
             when(teamRequestRepository.findFirstByUserUuidAndTeamUuid(userUuid, teamUuid)).thenReturn(Optional.empty());
 
             assertThrows(TeamRequestNotFoundException.class, () ->
-                    teamRequestService.deleteTeamRequest(teamUuid, "TestUser"));
+                    teamRequestService.deleteTeamRequest(teamUuid, userUuid));
         }
 
         @Test
         void deleteTeamRequest_WithValidParams_ShouldDeleteRequest() {
             UUID teamUuid = UUID.fromString("91b179f6-154a-4449-8709-616d1b58f7f3");
             UUID userUuid = UUID.fromString("f30595c9-8c6b-4273-8245-9d6fd39d16f2");
-            when(userRepository.findFirstByUsername("TestUser")).thenReturn(Optional.of(new UserEntity().setUuid(userUuid)));
+            when(userRepository.findById(userUuid)).thenReturn(Optional.of(new UserEntity().setUuid(userUuid)));
             when(teamRequestRepository.findFirstByUserUuidAndTeamUuid(userUuid, teamUuid)).thenReturn(Optional.of(new TeamRequestEntity()));
 
-            teamRequestService.deleteTeamRequest(teamUuid, "TestUser");
+            teamRequestService.deleteTeamRequest(teamUuid, userUuid);
 
             verify(teamRequestRepository).deleteById(userUuid);
         }
