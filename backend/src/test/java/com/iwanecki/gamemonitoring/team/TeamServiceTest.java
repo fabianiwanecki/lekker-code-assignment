@@ -59,12 +59,13 @@ class TeamServiceTest {
 
         @Test
         void createTeam_WithValidParams_ShouldAddUserToTeam() {
-            TeamEntity team = new TeamEntity().setName("TestTeam").setMaxMembers(10);
+            UUID teamUuid = UUID.fromString("d6055f3d-7c62-4449-ad1e-794e2410cd10");
+            TeamEntity team = new TeamEntity().setUuid(teamUuid).setName("TestTeam").setMaxMembers(10);
             when(teamRepository.save(any())).thenReturn(team);
 
             teamService.createTeam(new CreateTeamReqDto( "TestTeam", 10), "TestUser");
 
-            verify(userService).addUserToTeam("TestUser", TeamRole.OWNER, team);
+            verify(userService).addUserToTeam("TestUser", TeamRole.OWNER, teamUuid);
         }
     }
 

@@ -5,6 +5,7 @@ import com.iwanecki.gamemonitoring.authentication.SignUpReqDto;
 import com.iwanecki.gamemonitoring.shared.PageDto;
 import com.iwanecki.gamemonitoring.team.TeamEntity;
 import com.iwanecki.gamemonitoring.team.TeamRole;
+import com.iwanecki.gamemonitoring.team.TeamService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,7 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 
@@ -28,6 +28,7 @@ public class UserService {
     private final ScoreService scoreService;
     private final PasswordEncoder passwordEncoder;
     private final UserRankRepository userRankRepository;
+    private final TeamService teamService;
 
 
     @Transactional
@@ -75,32 +76,37 @@ public class UserService {
         userRepository.removeTeam(teamUuid);
     }
 
-    public void addUserToTeam(UUID userUuid, TeamRole teamRole, TeamEntity team) {
-        Optional<UserEntity> userOptional = userRepository.findById(userUuid);
+    public void addUserToTeam(UUID userUuid, TeamRole teamRole, UUID teamUuid) {
+        UserEntity user = userRepository.findById(userUuid)
+                .orElseThrow(UserNotFoundException::new);
 
-        if (userOptional.isEmpty()) {
-            throw new UserNotFoundException("The user doesn't exists");
-        }
-
-        addUserToTeam(userOptional.get(), teamRole, team);
+        addUserToTeam(user, teamRole, teamUuid);
     }
 
-    public void addUserToTeam(String username, TeamRole teamRole, TeamEntity team) {
-        Optional<UserEntity> userOptional = userRepository.findFirstByUsername(username);
+    public void addUserToTeam(String username, TeamRole teamRole, UUID teamUuid) {
+        UserEntity user = userRepository.findFirstByUsername(username)
+                .orElseThrow(UserNotFoundException::new);
 
-        if (userOptional.isEmpty()) {
-            throw new UserNotFoundException("The user doesn't exists");
-        }
-
-        addUserToTeam(userOptional.get(), teamRole, team);
+        addUserToTeam(user, teamRole, teamUuid);
     }
 
-    public void addUserToTeam(UserEntity user, TeamRole teamRole, TeamEntity team) {
+    public void addUserToTeam(UserEntity user, TeamRole teamRole, UUID teamUuid) {
         if (user.getTeam() != null) {
             throw new AlreadyTeamMemberException("The user is already member of a team");
         }
 
+        TeamEntity team = teamService.fetchByUuid(teamUuid);
+
         user.setTeam(team).setTeamRole(teamRole);
         userRepository.save(user);
+    }
+
+    public UserEntity fetchByUsername(String username) {
+        return userRepository.findFirstByUsername(username)
+                .orElseThrow(UserNotFoundException::new);
+    }
+
+    public boolean existsByUuid(UUID userUuid) {
+        return userRepository.existsById(userUuid);
     }
 }

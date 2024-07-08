@@ -25,9 +25,6 @@ class TeamRequestServiceTest {
     private TeamRequestRepository teamRequestRepository;
 
     @Mock
-    private UserRepository userRepository;
-
-    @Mock
     private UserService userService;
 
     @Mock
@@ -37,19 +34,9 @@ class TeamRequestServiceTest {
     class CreateTeamRequestTest {
 
         @Test
-        void createTeamRequest_WithUserNotFound_ShouldThrow() {
-            UUID teamUuid = UUID.fromString("91b179f6-154a-4449-8709-616d1b58f7f3");
-            when(userRepository.findFirstByUsername("TestUser")).thenReturn(Optional.empty());
-            assertThrows(UserNotFoundException.class,
-                    () -> teamRequestService.createTeamRequest(teamUuid, "TestUser"));
-        }
-
-        @Test
         void createTeamRequest_WithUserAlreadyHasATeam_ShouldThrow() {
             UUID teamUuid = UUID.fromString("91b179f6-154a-4449-8709-616d1b58f7f3");
-            when(userRepository.findFirstByUsername("TestUser")).thenReturn(Optional.of(
-                    new UserEntity().setTeam(new TeamEntity())
-            ));
+            when(userService.fetchByUsername("TestUser")).thenReturn(new UserEntity().setTeam(new TeamEntity()));
 
             assertThrows(AlreadyTeamMemberException.class,
                     () -> teamRequestService.createTeamRequest(teamUuid, "TestUser"));
@@ -59,9 +46,7 @@ class TeamRequestServiceTest {
         void createTeamRequest_WithUserAlreadyHasAPendingRequest_ShouldThrow() {
             UUID teamUuid = UUID.fromString("91b179f6-154a-4449-8709-616d1b58f7f3");
             UUID userUuid = UUID.fromString("f30595c9-8c6b-4273-8245-9d6fd39d16f2");
-            when(userRepository.findFirstByUsername("TestUser")).thenReturn(Optional.of(
-                    new UserEntity().setUuid(userUuid)
-            ));
+            when(userService.fetchByUsername("TestUser")).thenReturn(new UserEntity().setUuid(userUuid));
             when(teamRequestRepository.existsById(userUuid)).thenReturn(true);
 
             assertThrows(TeamRequestIsPendingException.class,
@@ -72,9 +57,7 @@ class TeamRequestServiceTest {
         void createTeamRequest_WithValidParams_ShouldCreateRequest() {
             UUID teamUuid = UUID.fromString("91b179f6-154a-4449-8709-616d1b58f7f3");
             UUID userUuid = UUID.fromString("f30595c9-8c6b-4273-8245-9d6fd39d16f2");
-            when(userRepository.findFirstByUsername("TestUser")).thenReturn(Optional.of(
-                    new UserEntity().setUuid(userUuid)
-            ));
+            when(userService.fetchByUsername("TestUser")).thenReturn(new UserEntity().setUuid(userUuid));
             when(teamRequestRepository.existsById(userUuid)).thenReturn(false);
 
             teamRequestService.createTeamRequest(teamUuid, "TestUser");
@@ -90,7 +73,7 @@ class TeamRequestServiceTest {
         void deleteTeamRequest_WithUserNotFound_ShouldThrow() {
             UUID teamUuid = UUID.fromString("91b179f6-154a-4449-8709-616d1b58f7f3");
             UUID userUuid = UUID.fromString("67a0981f-c13a-4972-878c-3da1e28ef82c");
-            when(userRepository.findById(userUuid)).thenReturn(Optional.empty());
+            when(userService.existsByUuid(userUuid)).thenReturn(false);
 
             assertThrows(UserNotFoundException.class, () ->
                     teamRequestService.deleteTeamRequest(teamUuid, userUuid));
@@ -100,7 +83,7 @@ class TeamRequestServiceTest {
         void deleteTeamRequest_WithNoPendingRequest_ShouldThrow() {
             UUID teamUuid = UUID.fromString("91b179f6-154a-4449-8709-616d1b58f7f3");
             UUID userUuid = UUID.fromString("f30595c9-8c6b-4273-8245-9d6fd39d16f2");
-            when(userRepository.findById(userUuid)).thenReturn(Optional.of(new UserEntity().setUuid(userUuid)));
+            when(userService.existsByUuid(userUuid)).thenReturn(true);
             when(teamRequestRepository.findFirstByUserUuidAndTeamUuid(userUuid, teamUuid)).thenReturn(Optional.empty());
 
             assertThrows(TeamRequestNotFoundException.class, () ->
@@ -111,7 +94,7 @@ class TeamRequestServiceTest {
         void deleteTeamRequest_WithValidParams_ShouldDeleteRequest() {
             UUID teamUuid = UUID.fromString("91b179f6-154a-4449-8709-616d1b58f7f3");
             UUID userUuid = UUID.fromString("f30595c9-8c6b-4273-8245-9d6fd39d16f2");
-            when(userRepository.findById(userUuid)).thenReturn(Optional.of(new UserEntity().setUuid(userUuid)));
+            when(userService.existsByUuid(userUuid)).thenReturn(true);
             when(teamRequestRepository.findFirstByUserUuidAndTeamUuid(userUuid, teamUuid)).thenReturn(Optional.of(new TeamRequestEntity()));
 
             teamRequestService.deleteTeamRequest(teamUuid, userUuid);
@@ -138,13 +121,11 @@ class TeamRequestServiceTest {
         void answerTeamRequest_WithAcceptRequest_ShouldAddUserToTeamAsMember() {
             UUID teamUuid = UUID.fromString("91b179f6-154a-4449-8709-616d1b58f7f3");
             UUID userUuid = UUID.fromString("f30595c9-8c6b-4273-8245-9d6fd39d16f2");
-            TeamEntity team = new TeamEntity();
             when(teamRequestRepository.findFirstByUserUuidAndTeamUuid(userUuid, teamUuid)).thenReturn(Optional.of(new TeamRequestEntity()));
-            when(teamRepository.findById(teamUuid)).thenReturn(Optional.of(team));
 
             teamRequestService.answerTeamRequest(teamUuid, new AnswerTeamRequestReqDto(userUuid, true));
 
-            verify(userService).addUserToTeam(userUuid, TeamRole.MEMBER, team);
+            verify(userService).addUserToTeam(userUuid, TeamRole.MEMBER, teamUuid);
             verify(teamRequestRepository).deleteById(userUuid);
         }
 
@@ -159,17 +140,6 @@ class TeamRequestServiceTest {
 
             verifyNoInteractions(userService);
             verify(teamRequestRepository).deleteById(userUuid);
-        }
-
-        @Test
-        void answerTeamRequest_WithAcceptRequestAndTeamNotFound_ShouldThrow() {
-            UUID teamUuid = UUID.fromString("91b179f6-154a-4449-8709-616d1b58f7f3");
-            UUID userUuid = UUID.fromString("f30595c9-8c6b-4273-8245-9d6fd39d16f2");
-            when(teamRequestRepository.findFirstByUserUuidAndTeamUuid(userUuid, teamUuid)).thenReturn(Optional.of(new TeamRequestEntity()));
-            when(teamRepository.findById(teamUuid)).thenReturn(Optional.empty());
-
-            AnswerTeamRequestReqDto answerTeamRequestReq = new AnswerTeamRequestReqDto(userUuid, true);
-            assertThrows(TeamNotFoundException.class, () -> teamRequestService.answerTeamRequest(teamUuid, answerTeamRequestReq));
         }
 
     }

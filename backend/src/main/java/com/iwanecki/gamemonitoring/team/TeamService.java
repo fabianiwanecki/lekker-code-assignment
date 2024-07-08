@@ -31,7 +31,7 @@ public class TeamService {
 
         team = teamRepository.save(team);
 
-        userService.addUserToTeam(username, TeamRole.OWNER, team);
+        userService.addUserToTeam(username, TeamRole.OWNER, team.getUuid());
 
         return teamMapper.mapEntitytoDto(team);
     }
@@ -76,5 +76,9 @@ public class TeamService {
         TeamEntity team = teamRepository.findById(uuid).orElseThrow(TeamNotFoundException::new);
         List<UserWithRankDto> users = userService.fetchMultipleUsersWithRank(team.getMembers().stream().map(UserEntity::getUuid).toList());
         return teamMapper.mapEntitytoDtoWithMembers(team, users);
+    }
+
+    public TeamEntity fetchByUuid(UUID teamUuid) {
+        return teamRepository.findById(teamUuid).orElseThrow(TeamNotFoundException::new);
     }
 }

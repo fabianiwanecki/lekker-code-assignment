@@ -12,13 +12,10 @@ import java.util.UUID;
 public class TeamRequestService {
 
     private final TeamRequestRepository teamRequestRepository;
-    private final UserRepository userRepository;
     private final UserService userService;
-    private final TeamRepository teamRepository;
 
     public void createTeamRequest(UUID teamUuid, String username) {
-        UserEntity user = userRepository.findFirstByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        UserEntity user = userService.fetchByUsername(username);
 
         if (user.getTeam() != null) {
             throw new AlreadyTeamMemberException("User is already member of a team");
@@ -42,21 +39,22 @@ public class TeamRequestService {
         }
 
         if (answerTeamRequestReq.acceptRequest()) {
-            TeamEntity team = teamRepository.findById(teamUuid).orElseThrow(TeamNotFoundException::new);
-            userService.addUserToTeam(answerTeamRequestReq.userUuid(), TeamRole.MEMBER, team);
+            userService.addUserToTeam(answerTeamRequestReq.userUuid(), TeamRole.MEMBER, teamUuid);
         }
 
         teamRequestRepository.deleteById(answerTeamRequestReq.userUuid());
     }
 
-    public void deleteTeamRequest(UUID teamUuid, UUID userUUid) {
-        UserEntity user = userRepository.findById(userUUid).orElseThrow(() -> new UserNotFoundException("User not found"));
+    public void deleteTeamRequest(UUID teamUuid, UUID userUuid) {
+        if (!userService.existsByUuid(userUuid)) {
+            throw new UserNotFoundException();
+        }
 
-        if (teamRequestRepository.findFirstByUserUuidAndTeamUuid(user.getUuid(), teamUuid).isEmpty()) {
+        if (teamRequestRepository.findFirstByUserUuidAndTeamUuid(userUuid, teamUuid).isEmpty()) {
             throw new TeamRequestNotFoundException("The user doesn't have a pending request for this team");
         }
 
-        teamRequestRepository.deleteById(user.getUuid());
+        teamRequestRepository.deleteById(userUuid);
     }
 
     public void deleteAllRequests(UUID teamUuid) {
