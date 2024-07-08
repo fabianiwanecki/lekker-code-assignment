@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +22,7 @@ import java.util.UUID;
 public class TeamController {
 
     private final TeamService teamService;
+    private final TeamRequestService teamRequestService;
 
     @PostMapping
     public TeamDto createTeam(@Valid @NotNull @RequestBody CreateTeamReqDto createTeamReq) {
@@ -51,4 +53,22 @@ public class TeamController {
         return teamService.listTeams(page, size);
     }
 
+    @PostMapping("{uuid}/request")
+    public ResponseEntity<Void> createTeamRequest(@PathVariable UUID uuid, Authentication authentication) {
+        teamRequestService.createTeamRequest(uuid, authentication.getName());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PreAuthorize("hasAuthority('OWNER_' + #teamUuid)")
+    @PutMapping("{teamUuid}/request")
+    public ResponseEntity<Void> answerTeamRequest(@PathVariable UUID teamUuid, @Valid @RequestBody AnswerTeamRequestReqDto answerTeamRequestReq) {
+        teamRequestService.answerTeamRequest(teamUuid, answerTeamRequestReq);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @DeleteMapping("{teamUuid}/request")
+    public ResponseEntity<Void> deleteTeamRequest(@PathVariable UUID teamUuid, Authentication authentication) {
+        teamRequestService.deleteTeamRequest(teamUuid, authentication.getName());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }

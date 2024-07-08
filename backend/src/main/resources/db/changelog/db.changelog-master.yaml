@@ -57,3 +57,26 @@ databaseChangeLog:
               - column:
                   name: team_role
                   type: varchar
+  - changeSet:
+      id: 4
+      author: Fabian Iwanecki
+      changes:
+        - createTable:
+            tableName: team_request
+            columns:
+              - column:
+                  name: user_uuid
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    foreignKeyName: fk_team_request_user
+                    referencedTableName: user_
+                    referencedColumnNames: uuid
+              - column:
+                  name: team_uuid
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk_team_request_team
+                    referencedTableName: team
+                    referencedColumnNames: uuid
+                    nullable: false

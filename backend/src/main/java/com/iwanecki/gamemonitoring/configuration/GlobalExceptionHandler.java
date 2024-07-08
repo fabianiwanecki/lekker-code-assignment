@@ -1,7 +1,10 @@
 package com.iwanecki.gamemonitoring.configuration;
 
 import com.iwanecki.gamemonitoring.team.TeamNotFoundException;
+import com.iwanecki.gamemonitoring.team.TeamRequestIsPendingException;
+import com.iwanecki.gamemonitoring.team.TeamRequestNotFoundException;
 import com.iwanecki.gamemonitoring.team.TeamUpdateException;
+import com.iwanecki.gamemonitoring.user.AlreadyTeamMemberException;
 import com.iwanecki.gamemonitoring.user.UserAlreadyExistsException;
 import com.iwanecki.gamemonitoring.user.UserNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -29,7 +32,6 @@ public class GlobalExceptionHandler {
     public ErrorDto authorizationDeniedExceptionHandler(AuthorizationDeniedException e) {
         return new ErrorDto(e.getMessage());
     }
-
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -66,6 +68,24 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(TeamUpdateException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDto teamUpdateExceptionHandler(TeamUpdateException e) {
+        return new ErrorDto(e.getMessage());
+    }
+
+    @ExceptionHandler(TeamRequestIsPendingException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDto teamRequestIsPendingExceptionHandler(TeamRequestIsPendingException e) {
+        return new ErrorDto(e.getMessage());
+    }
+
+    @ExceptionHandler(TeamRequestNotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDto teamRequestNotFoundExceptionHandler(TeamRequestNotFoundException e) {
+        return new ErrorDto(e.getMessage());
+    }
+
+    @ExceptionHandler(AlreadyTeamMemberException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDto alreadyTeamMemberExceptionHandler(AlreadyTeamMemberException e) {
         return new ErrorDto(e.getMessage());
     }
 

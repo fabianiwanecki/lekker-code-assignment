@@ -37,6 +37,9 @@ class TeamServiceTest {
     private TeamRepository teamRepository;
 
     @Mock
+    private TeamRequestService teamRequestService;
+
+    @Mock
     private TeamDetailedRepository teamDetailedRepository;
 
     @Mock

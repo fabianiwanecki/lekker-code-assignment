@@ -18,6 +18,7 @@ public class TeamService {
     private final TeamDetailedRepository teamDetailedRepository;
     private final UserService userService;
     private final TeamMapper teamMapper;
+    private final TeamRequestService teamRequestService;
 
     @Transactional
     public TeamDto createTeam(CreateTeamReqDto createTeamReq) {
@@ -38,6 +39,7 @@ public class TeamService {
             throw new TeamNotFoundException();
         }
 
+        teamRequestService.deleteAllRequests(uuid);
         userService.removeTeam(uuid);
         teamRepository.deleteById(uuid);
     }
