@@ -19,7 +19,7 @@ public class CreateTeamService {
     public TeamDto createTeam(CreateTeamReqDto createTeamReq, String username) {
         TeamDto team = teamService.createTeam(createTeamReq, username);
         UserDto user = userService.fetchByUsername(username);
-        teamRequestService.deleteTeamRequest(team.uuid(), user.uuid());
+        teamRequestService.deleteTeamRequestForUser(user.uuid());
         return team;
     }
 }

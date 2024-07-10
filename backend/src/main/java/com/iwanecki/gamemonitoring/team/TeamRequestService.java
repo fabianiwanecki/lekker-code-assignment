@@ -59,6 +59,14 @@ public class TeamRequestService {
         teamRequestRepository.deleteById(userUuid);
     }
 
+    public void deleteTeamRequestForUser(UUID userUuid) {
+        if (!userService.existsByUuid(userUuid)) {
+            throw new UserNotFoundException();
+        }
+
+        teamRequestRepository.deleteById(userUuid);
+    }
+
     public void deleteAllRequests(UUID teamUuid) {
         teamRequestRepository.deleteAllByTeamUuid(teamUuid);
     }
