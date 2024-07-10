@@ -3,12 +3,12 @@ import {provideRouter} from '@angular/router';
 
 import {routes} from './app.routes';
 import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
-import {HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi} from "@angular/common/http";
-import {AuthInterceptor} from "./service/authentication/auth.interceptor";
+import {provideHttpClient, withInterceptors} from "@angular/common/http";
+import {authenticationInterceptor} from "./service/authentication/authentication.interceptor";
+
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideHttpClient(withInterceptorsFromDi()),
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+  providers: [provideHttpClient(withInterceptors([authenticationInterceptor])),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideAnimationsAsync()],
