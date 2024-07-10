@@ -13,7 +13,7 @@ public interface TeamMapper {
     List<TeamDetailedDto> mapEntitytoDtoDetailed(List<TeamDetailedEntity> entity);
 
     @Mapping(source = "members", target = "members")
-    TeamWithMembersDto mapEntitytoDtoWithMembers(TeamEntity entity, List<UserWithRankDto> members);
+    TeamDetailedWithMembersDto mapEntitytoDtoWithMembers(TeamDetailedEntity entity, List<UserWithRankDto> members);
 
     TeamDto mapEntitytoDto(TeamEntity entity);
     List<TeamDto> mapEntitytoDto(List<TeamEntity> entity);

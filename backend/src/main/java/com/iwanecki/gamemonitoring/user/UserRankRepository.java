@@ -27,4 +27,8 @@ public class UserRankRepository {
         Object[] userUuidStringList = userUuidList.stream().map(UUID::toString).toArray();
         return redisTemplate.execute(redisScript, List.of(USER_SCORE_KEY), userUuidStringList);
     }
+
+    public Long fetchUserRank(UUID uuid) {
+        return redisTemplate.opsForZSet().reverseRank(USER_SCORE_KEY, uuid.toString());
+    }
 }

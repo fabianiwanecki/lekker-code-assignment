@@ -5,6 +5,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -13,21 +14,22 @@ public class TeamRequestService {
 
     private final TeamRequestRepository teamRequestRepository;
     private final UserService userService;
+    private final TeamService teamService;
 
     public void createTeamRequest(UUID teamUuid, String username) {
-        UserEntity user = userService.fetchByUsername(username);
+        UserDto user = userService.fetchByUsername(username);
 
-        if (user.getTeam() != null) {
+        if (user.team() != null) {
             throw new AlreadyTeamMemberException("User is already member of a team");
         }
 
-        if (teamRequestRepository.existsById(user.getUuid())) {
+        if (teamRequestRepository.existsById(user.uuid())) {
             throw new TeamRequestIsPendingException("User already has a pending request for a team");
         }
 
         TeamRequestEntity teamRequest = new TeamRequestEntity()
                 .setTeamUuid(teamUuid)
-                .setUserUuid(user.getUuid());
+                .setUserUuid(user.uuid());
 
         teamRequestRepository.save(teamRequest);
     }
@@ -39,7 +41,7 @@ public class TeamRequestService {
         }
 
         if (answerTeamRequestReq.acceptRequest()) {
-            userService.addUserToTeam(answerTeamRequestReq.userUuid(), TeamRole.MEMBER, teamUuid);
+            teamService.addUserToTeam(answerTeamRequestReq.userUuid(), TeamRole.MEMBER, teamUuid);
         }
 
         teamRequestRepository.deleteById(answerTeamRequestReq.userUuid());
@@ -59,5 +61,13 @@ public class TeamRequestService {
 
     public void deleteAllRequests(UUID teamUuid) {
         teamRequestRepository.deleteAllByTeamUuid(teamUuid);
+    }
+
+    public List<TeamRequestDto> listTeamRequest(UUID teamUuid) {
+        List<TeamRequestEntity> teamRequest = teamRequestRepository.findAllByTeamUuid(teamUuid);
+        List<UUID> userUuidList = teamRequest.stream().map(TeamRequestEntity::getUserUuid).toList();
+        List<UserWithRankDto> userWithRankList = userService.fetchMultipleUsersWithRank(userUuidList);
+
+        return userWithRankList.stream().map(TeamRequestDto::new).toList();
     }
 }

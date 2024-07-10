@@ -33,9 +33,6 @@ class TeamServiceTest {
     private TeamRepository teamRepository;
 
     @Mock
-    private TeamRequestService teamRequestService;
-
-    @Mock
     private TeamDetailedRepository teamDetailedRepository;
 
     @Mock
@@ -43,6 +40,32 @@ class TeamServiceTest {
 
     @Spy
     private TeamMapperImpl teamMapper;
+
+    @Nested
+    class AddUserToTeamTest {
+
+        @Test
+        void addUserToTeam_WithValidParams_ShouldAddUserToTeam() {
+            UUID userUuid = UUID.fromString("238efcc7-88b3-457d-aa03-63122aeb047a");
+            UUID teamUuid = UUID.fromString("97932fe1-80a1-4fd6-889c-4ea6a6d3ed2d");
+            TeamEntity team = new TeamEntity().setUuid(teamUuid);
+            when(teamRepository.findById(teamUuid)).thenReturn(Optional.of(team));
+
+            teamService.addUserToTeam(userUuid, TeamRole.OWNER, teamUuid);
+
+            verify(userService).addUserToTeam(userUuid, team, TeamRole.OWNER);
+        }
+
+        @Test
+        void addUserToTeam_WithTeamNotFound_ShouldThrow() {
+            UUID userUuid = UUID.fromString("238efcc7-88b3-457d-aa03-63122aeb047a");
+            UUID teamUuid = UUID.fromString("97932fe1-80a1-4fd6-889c-4ea6a6d3ed2d");
+            when(teamRepository.findById(teamUuid)).thenReturn(Optional.empty());
+
+            assertThrows(TeamNotFoundException.class, () -> teamService.addUserToTeam(userUuid, TeamRole.OWNER, teamUuid));
+        }
+
+    }
 
     @Nested
     class CreateTeamTest {
@@ -63,41 +86,9 @@ class TeamServiceTest {
             TeamEntity team = new TeamEntity().setUuid(teamUuid).setName("TestTeam").setMaxMembers(10);
             when(teamRepository.save(any())).thenReturn(team);
 
-            teamService.createTeam(new CreateTeamReqDto( "TestTeam", 10), "TestUser");
+            teamService.createTeam(new CreateTeamReqDto("TestTeam", 10), "TestUser");
 
-            verify(userService).addUserToTeam("TestUser", TeamRole.OWNER, teamUuid);
-        }
-    }
-
-    @Nested
-    class DeleteTeamTest {
-
-        @Test
-        void deleteTeam_WithTeamNotFound_ShouldThrow() {
-            when(teamRepository.findById(any())).thenReturn(Optional.empty());
-
-            UUID teamUuid = UUID.fromString("d6055f3d-7c62-4449-ad1e-794e2410cd10");
-            assertThrows(TeamNotFoundException.class, () -> teamService.deleteTeam(teamUuid));
-        }
-
-        @Test
-        void deleteTeam_WithValidParameters_ShouldDeleteTeam() {
-            when(teamRepository.findById(any())).thenReturn(Optional.of(new TeamEntity()));
-
-            UUID teamUuid = UUID.fromString("d6055f3d-7c62-4449-ad1e-794e2410cd10");
-            teamService.deleteTeam(teamUuid);
-
-            verify(teamRepository).deleteById(teamUuid);
-        }
-
-        @Test
-        void deleteTeam_WithValidParameters_ShouldRemoveTeamFromUsers() {
-            when(teamRepository.findById(any())).thenReturn(Optional.of(new TeamEntity()));
-
-            UUID teamUuid = UUID.fromString("d6055f3d-7c62-4449-ad1e-794e2410cd10");
-            teamService.deleteTeam(teamUuid);
-
-            verify(userService).removeTeam(teamUuid);
+            verify(userService).addUserToTeam("TestUser", team, TeamRole.OWNER);
         }
     }
 
@@ -167,24 +158,28 @@ class TeamServiceTest {
         @Test
         void fetchTeamDetails_WithValidParameters_ShouldReturnTeamDetails() {
             UUID teamUuid = UUID.fromString("366c91cb-be63-40bc-be7e-7105aefc7efc");
-            when(teamRepository.findById(teamUuid)).thenReturn(Optional.of(new TeamEntity()
+            when(teamDetailedRepository.findById(teamUuid)).thenReturn(Optional.of(new TeamDetailedEntity()
                     .setName("TestTeam")
                     .setMaxMembers(12)
+                    .setCurrentMembers(1)
+                    .setOwner("TestUser")
+                    .setTotalScore(144L)
                     .setMembers(List.of(new UserEntity()
                             .setUsername("TestUser")
                             .setScore(144)))));
             when(userService.fetchMultipleUsersWithRank(any())).thenReturn(List.of(new UserWithRankDto(null, "TestUser", 144, 1L)));
 
-            TeamWithMembersDto actual = teamService.fetchTeamDetails(teamUuid);
+            TeamDetailedWithMembersDto actual = teamService.fetchTeamDetails(teamUuid);
 
-            TeamWithMembersDto expected = new TeamWithMembersDto(null, "TestTeam", 12, List.of(new UserWithRankDto(null, "TestUser", 144, 1L)));
+            TeamDetailedWithMembersDto expected = new TeamDetailedWithMembersDto(null, "TestTeam", 12, 1, "TestUser", 144L, List.of(new UserWithRankDto(null, "TestUser", 144, 1L)));
 
             assertEquals(expected, actual);
         }
+
         @Test
         void fetchTeamDetails_WithTeamNotFound_ShouldThrow() {
             UUID teamUuid = UUID.fromString("366c91cb-be63-40bc-be7e-7105aefc7efc");
-            when(teamRepository.findById(teamUuid)).thenReturn(Optional.empty());
+            when(teamDetailedRepository.findById(teamUuid)).thenReturn(Optional.empty());
 
             assertThrows(TeamNotFoundException.class, () -> teamService.fetchTeamDetails(teamUuid));
         }

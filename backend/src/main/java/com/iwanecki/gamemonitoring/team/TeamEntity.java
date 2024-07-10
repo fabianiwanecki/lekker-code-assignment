@@ -10,6 +10,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,5 +30,5 @@ public class TeamEntity {
     private Integer maxMembers;
 
     @OneToMany(mappedBy = "team")
-    private List<UserEntity> members;
+    private List<UserEntity> members = new ArrayList<>();
 }

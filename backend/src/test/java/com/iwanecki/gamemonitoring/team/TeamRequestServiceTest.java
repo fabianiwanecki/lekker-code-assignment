@@ -8,9 +8,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -28,7 +30,26 @@ class TeamRequestServiceTest {
     private UserService userService;
 
     @Mock
-    private TeamRepository teamRepository;
+    private TeamService teamService;
+
+    @Nested
+    class ListTeamRequestsTest {
+
+        @Test
+        void listTeamRequest_WithValidParams_ShouldListTeamRequestsWithUserDetails() {
+            UUID teamUuid = UUID.fromString("91b179f6-154a-4449-8709-616d1b58f7f3");
+            UUID userUuid = UUID.fromString("91b179f6-154a-4449-8709-616d1b58f7f2");
+            when(teamRequestRepository.findAllByTeamUuid(teamUuid)).thenReturn(List.of(new TeamRequestEntity().setUserUuid(userUuid).setTeamUuid(teamUuid)));
+            when(userService.fetchMultipleUsersWithRank(List.of(userUuid))).thenReturn(List.of(new UserWithRankDto(userUuid, "TestUser", 120, 1L)));
+
+            List<TeamRequestDto> actual = teamRequestService.listTeamRequest(teamUuid);
+
+            List<TeamRequestDto> expected = List.of(new TeamRequestDto(new UserWithRankDto(userUuid, "TestUser", 120, 1L)));
+
+            assertEquals(expected, actual);
+        }
+
+    }
 
     @Nested
     class CreateTeamRequestTest {
@@ -36,7 +57,7 @@ class TeamRequestServiceTest {
         @Test
         void createTeamRequest_WithUserAlreadyHasATeam_ShouldThrow() {
             UUID teamUuid = UUID.fromString("91b179f6-154a-4449-8709-616d1b58f7f3");
-            when(userService.fetchByUsername("TestUser")).thenReturn(new UserEntity().setTeam(new TeamEntity()));
+            when(userService.fetchByUsername("TestUser")).thenReturn(new UserDto(null, null, null, new TeamDto(teamUuid, null, null)));
 
             assertThrows(AlreadyTeamMemberException.class,
                     () -> teamRequestService.createTeamRequest(teamUuid, "TestUser"));
@@ -46,7 +67,7 @@ class TeamRequestServiceTest {
         void createTeamRequest_WithUserAlreadyHasAPendingRequest_ShouldThrow() {
             UUID teamUuid = UUID.fromString("91b179f6-154a-4449-8709-616d1b58f7f3");
             UUID userUuid = UUID.fromString("f30595c9-8c6b-4273-8245-9d6fd39d16f2");
-            when(userService.fetchByUsername("TestUser")).thenReturn(new UserEntity().setUuid(userUuid));
+            when(userService.fetchByUsername("TestUser")).thenReturn(new UserDto(userUuid, null, null, null));
             when(teamRequestRepository.existsById(userUuid)).thenReturn(true);
 
             assertThrows(TeamRequestIsPendingException.class,
@@ -57,7 +78,7 @@ class TeamRequestServiceTest {
         void createTeamRequest_WithValidParams_ShouldCreateRequest() {
             UUID teamUuid = UUID.fromString("91b179f6-154a-4449-8709-616d1b58f7f3");
             UUID userUuid = UUID.fromString("f30595c9-8c6b-4273-8245-9d6fd39d16f2");
-            when(userService.fetchByUsername("TestUser")).thenReturn(new UserEntity().setUuid(userUuid));
+            when(userService.fetchByUsername("TestUser")).thenReturn(new UserDto(userUuid, null, null, null));
             when(teamRequestRepository.existsById(userUuid)).thenReturn(false);
 
             teamRequestService.createTeamRequest(teamUuid, "TestUser");
@@ -125,7 +146,7 @@ class TeamRequestServiceTest {
 
             teamRequestService.answerTeamRequest(teamUuid, new AnswerTeamRequestReqDto(userUuid, true));
 
-            verify(userService).addUserToTeam(userUuid, TeamRole.MEMBER, teamUuid);
+            verify(teamService).addUserToTeam(userUuid, TeamRole.MEMBER, teamUuid);
             verify(teamRequestRepository).deleteById(userUuid);
         }
 

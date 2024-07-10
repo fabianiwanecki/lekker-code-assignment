@@ -27,7 +27,8 @@ public class AuthService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
+        UserDto user = userService.fetchByUsername(signInReq.username());
 
-        return new SignInResDto(jwt);
+        return new SignInResDto(jwt, user.uuid());
     }
 }

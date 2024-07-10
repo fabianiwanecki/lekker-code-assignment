@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Validated
@@ -22,11 +23,13 @@ import java.util.UUID;
 public class TeamController {
 
     private final TeamService teamService;
+    private final DeleteTeamService deleteTeamService;
+    private final CreateTeamService createTeamService;
     private final TeamRequestService teamRequestService;
 
     @PostMapping
     public TeamDto createTeam(@Valid @NotNull @RequestBody CreateTeamReqDto createTeamReq, Authentication authentication) {
-        return teamService.createTeam(createTeamReq, authentication.getName());
+        return createTeamService.createTeam(createTeamReq, authentication.getName());
     }
 
     @PreAuthorize("hasAuthority('OWNER_' + #uuid)")
@@ -35,16 +38,15 @@ public class TeamController {
         return teamService.updateTeam(uuid, updateTeamReq);
     }
 
-
     @GetMapping("{uuid}")
-    public TeamWithMembersDto fetchTeamDetails(@PathVariable UUID uuid) {
+    public TeamDetailedWithMembersDto fetchTeamDetails(@PathVariable UUID uuid) {
         return teamService.fetchTeamDetails(uuid);
     }
 
     @PreAuthorize("hasAuthority('OWNER_' + #uuid)")
     @DeleteMapping("{uuid}")
     public ResponseEntity<Void> deleteTeam(@PathVariable UUID uuid) {
-        teamService.deleteTeam(uuid);
+        deleteTeamService.deleteTeam(uuid);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -53,22 +55,27 @@ public class TeamController {
         return teamService.listTeams(page, size);
     }
 
-    @PostMapping("{uuid}/request")
+    @PostMapping("{uuid}/requests")
     public ResponseEntity<Void> createTeamRequest(@PathVariable UUID uuid, Authentication authentication) {
         teamRequestService.createTeamRequest(uuid, authentication.getName());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PreAuthorize("hasAuthority('OWNER_' + #teamUuid)")
-    @PutMapping("{teamUuid}/request")
+    @PutMapping("{teamUuid}/requests")
     public ResponseEntity<Void> answerTeamRequest(@PathVariable UUID teamUuid, @Valid @RequestBody AnswerTeamRequestReqDto answerTeamRequestReq) {
         teamRequestService.answerTeamRequest(teamUuid, answerTeamRequestReq);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @DeleteMapping("{teamUuid}/request")
+    @DeleteMapping("{teamUuid}/requests")
     public ResponseEntity<Void> deleteTeamRequest(@PathVariable UUID teamUuid, Authentication authentication) {
         teamRequestService.deleteTeamRequest(teamUuid, UUID.fromString(authentication.getName()));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("{teamUuid}/requests")
+    public List<TeamRequestDto> listTeamRequests(@PathVariable UUID teamUuid) {
+        return teamRequestService.listTeamRequest(teamUuid);
     }
 }

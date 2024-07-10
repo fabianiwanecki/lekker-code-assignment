@@ -6,7 +6,6 @@ import com.iwanecki.gamemonitoring.shared.PageDto;
 import com.iwanecki.gamemonitoring.team.TeamAlreadyFullException;
 import com.iwanecki.gamemonitoring.team.TeamEntity;
 import com.iwanecki.gamemonitoring.team.TeamRole;
-import com.iwanecki.gamemonitoring.team.TeamService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,7 +28,6 @@ public class UserService {
     private final ScoreService scoreService;
     private final PasswordEncoder passwordEncoder;
     private final UserRankRepository userRankRepository;
-    private final TeamService teamService;
 
 
     @Transactional
@@ -73,30 +71,45 @@ public class UserService {
         return new PageDto<>(page, users.getContent().size(), users.getTotalElements(), userMapper.mapUserEntityAndRankToUserWithRankAndTeamDto(users.getContent(), rankList));
     }
 
-    public void removeTeam(UUID teamUuid) {
+    public void removeUsersFromTeam(UUID teamUuid) {
         userRepository.removeTeam(teamUuid);
     }
 
-    public void addUserToTeam(UUID userUuid, TeamRole teamRole, UUID teamUuid) {
-        UserEntity user = userRepository.findById(userUuid)
-                .orElseThrow(UserNotFoundException::new);
-
-        addUserToTeam(user, teamRole, teamUuid);
+    public UserDto fetchByUsername(String username) {
+        return userMapper.mapUserEntityToUserDto(userRepository.findFirstByUsername(username)
+                .orElseThrow(UserNotFoundException::new));
     }
 
-    public void addUserToTeam(String username, TeamRole teamRole, UUID teamUuid) {
-        UserEntity user = userRepository.findFirstByUsername(username)
-                .orElseThrow(UserNotFoundException::new);
-
-        addUserToTeam(user, teamRole, teamUuid);
+    public boolean existsByUuid(UUID userUuid) {
+        return userRepository.existsById(userUuid);
     }
 
-    public void addUserToTeam(UserEntity user, TeamRole teamRole, UUID teamUuid) {
+
+    private UserEntity fetchByUuid(UUID userUuid) {
+        return userRepository.findById(userUuid)
+                .orElseThrow(UserNotFoundException::new);
+    }
+
+    public UserWithRankAndTeamDto fetchUserWithRankAndTeam(UUID uuid) {
+        UserEntity user = fetchByUuid(uuid);
+        Long rank = userRankRepository.fetchUserRank(uuid);
+        return userMapper.mapUserEntityAndRankToUserWithRankAndTeamDto(user, rank);
+    }
+
+    public void addUserToTeam(UUID userUuid, TeamEntity team, TeamRole teamRole) {
+        UserEntity user = fetchByUuid(userUuid);
+        addUserToTeam(user, team, teamRole);
+    }
+
+    public void addUserToTeam(String username, TeamEntity team, TeamRole teamRole) {
+        UserEntity user = userRepository.findFirstByUsername(username).orElseThrow(UserNotFoundException::new);
+        addUserToTeam(user, team, teamRole);
+    }
+
+    private void addUserToTeam(UserEntity user, TeamEntity team, TeamRole teamRole) {
         if (user.getTeam() != null) {
             throw new AlreadyTeamMemberException("The user is already member of a team");
         }
-
-        TeamEntity team = teamService.fetchByUuid(teamUuid);
 
         if (team.getMembers().size() >= team.getMaxMembers()) {
             throw new TeamAlreadyFullException("The team is already full");
@@ -104,14 +117,5 @@ public class UserService {
 
         user.setTeam(team).setTeamRole(teamRole);
         userRepository.save(user);
-    }
-
-    public UserEntity fetchByUsername(String username) {
-        return userRepository.findFirstByUsername(username)
-                .orElseThrow(UserNotFoundException::new);
-    }
-
-    public boolean existsByUuid(UUID userUuid) {
-        return userRepository.existsById(userUuid);
     }
 }
