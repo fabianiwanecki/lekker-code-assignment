@@ -1,0 +1,39 @@
+version: '2'
+
+services:
+  backend:
+    image: 'lekker-code-backend:latest'
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfile
+    container_name: lekker-code-backend-iwanecki
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/gamemonitoring
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_DATA_REDIS_HOST=redis
+  frontend:
+    image: 'lekker-code-frontend:latest'
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile
+    container_name: lekker-code-frontend-iwanecki
+    depends_on:
+      - backend
+    ports:
+      - "4200:4200"
+
+  db:
+    image: 'postgres:16.3-alpine'
+    container_name: lekker-code-postgres-iwanecki
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=gamemonitoring
+  redis:
+    image: 'redis:7.2.5'
+    container_name: lekker-code-redis-iwanecki
