@@ -1,7 +1,11 @@
 package com.iwanecki.gamemonitoring;
 
+import com.iwanecki.gamemonitoring.user.UserEntity;
+import com.iwanecki.gamemonitoring.user.UserRankRepository;
+import com.iwanecki.gamemonitoring.user.UserRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -13,7 +17,13 @@ import java.util.List;
 public class GameMonitoringApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(GameMonitoringApplication.class, args);
+        ApplicationContext context = SpringApplication.run(GameMonitoringApplication.class, args);
+
+        UserRankRepository userRankRepository = context.getBean(UserRankRepository.class);
+        UserRepository userRepository = context.getBean(UserRepository.class);
+
+        List<UserEntity> users = userRepository.findAll();
+        users.forEach(user -> userRankRepository.addUserScore(user.getUuid(), user.getScore()));
     }
 
     @Bean

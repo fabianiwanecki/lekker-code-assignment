@@ -80,3 +80,16 @@ databaseChangeLog:
                     referencedTableName: team
                     referencedColumnNames: uuid
                     nullable: false
+  - changeSet:
+      id: 5
+      author: Fabian Iwanecki
+      changes:
+        - loadData:
+            file: db/changelog/data/teams.csv
+            tableName: team
+        - loadData:
+            file: db/changelog/data/users.csv
+            tableName: user_
+
+
+
