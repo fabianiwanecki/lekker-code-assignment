@@ -61,7 +61,7 @@ public class UserService {
     }
 
     public PageDto<UserWithRankAndTeamDto> listUsers(Integer page, Integer size) {
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("score", "username"));
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Order.desc("score"), Sort.Order.desc("username")));
         Page<UserEntity> users = userRepository.findAll(pageable);
 
         List<UUID> userUuidList = users.getContent().stream().map(UserEntity::getUuid).toList();
