@@ -4,23 +4,23 @@ import {Observable} from "rxjs";
 import {environment} from "../../../environments/environment";
 import {UserWithRankAndTeamDto} from "../user/user.service";
 
-interface SignInResDto {
+export interface SignInResDto {
   token: string;
   userUuid: string;
 }
 
-interface SignUpResDto {
+export interface SignUpResDto {
   uuid: string;
   username: string;
   score: number;
 }
 
-interface SignUpReqDto {
+export interface SignUpReqDto {
   username: string;
   password: string;
 }
 
-interface SignInReqDto {
+export interface SignInReqDto {
   username: string;
   password: string;
 }

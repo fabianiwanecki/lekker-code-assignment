@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {MatButtonModule} from "@angular/material/button";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
-import {FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Router, RouterLink} from "@angular/router";
 import {CustomErrorStateMatcher} from "../../service/custom-error-state-matcher/custom-error-state-matcher";
 import {AuthenticationService} from "../../service/authentication/authentication.service";

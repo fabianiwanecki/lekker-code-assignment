@@ -7,17 +7,17 @@ import {BrowseUsersComponent} from "./component/browse-users/browse-users.compon
 import {TeamDetailsComponent} from "./component/team-details/team-details.component";
 import {CreateTeamComponent} from "./component/create-team/create-team.component";
 import {EditTeamComponent} from "./component/edit-team/edit-team.component";
-import { AuthGuard } from './service/authentication/auth.guard';
+import { authGuard } from './service/authentication/auth.guard';
 
 export const routes: Routes = [
   { path: '', component: SignInComponent },
   { path: 'sign-up', component: SignUpComponent },
   { path: 'sign-in', component: SignInComponent },
-  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
-  { path: 'teams', component: BrowseTeamsComponent, canActivate: [AuthGuard]  },
-  { path: 'users', component: BrowseUsersComponent, canActivate: [AuthGuard]  },
-  { path: 'teams/:id', component: TeamDetailsComponent, canActivate: [AuthGuard]  },
-  { path: 'create-team', component: CreateTeamComponent, canActivate: [AuthGuard]  },
-  { path: 'teams/:id/edit-team', component: EditTeamComponent, canActivate: [AuthGuard]  },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
+  { path: 'teams', component: BrowseTeamsComponent, canActivate: [authGuard]  },
+  { path: 'users', component: BrowseUsersComponent, canActivate: [authGuard]  },
+  { path: 'teams/:id', component: TeamDetailsComponent, canActivate: [authGuard]  },
+  { path: 'create-team', component: CreateTeamComponent, canActivate: [authGuard]  },
+  { path: 'teams/:id/edit-team', component: EditTeamComponent, canActivate: [authGuard]  },
 
 ];

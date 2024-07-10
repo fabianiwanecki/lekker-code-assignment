@@ -1,6 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SignInComponent } from './sign-in.component';
+import {provideRouter, Routes} from "@angular/router";
+import {provideHttpClient} from "@angular/common/http";
+import {BrowserAnimationsModule, NoopAnimationsModule, provideAnimations} from "@angular/platform-browser/animations";
+
+const routes: Routes = [
+  { path: '', component: {} as any },
+];
 
 describe('SignInComponent', () => {
   let component: SignInComponent;
@@ -8,7 +15,12 @@ describe('SignInComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SignInComponent]
+      imports: [SignInComponent],
+      providers: [
+        provideHttpClient(),
+        provideRouter(routes),
+        provideAnimations()
+      ]
     })
     .compileComponents();
 

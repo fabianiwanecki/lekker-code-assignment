@@ -40,17 +40,17 @@ export interface PageDto<T> {
   data: T[];
 }
 
-interface CreateTeamReqDto {
+export interface CreateTeamReqDto {
   name: string;
   maxMembers: number;
 }
 
-interface UpdateTeamReqDto {
+export interface UpdateTeamReqDto {
   name: string;
   maxMembers: number;
 }
 
-interface AnswerRequestReqDto {
+export interface AnswerRequestReqDto {
   userUuid: string;
   acceptRequest: boolean;
 }

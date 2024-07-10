@@ -1,6 +1,11 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { AppBarComponent } from './app-bar.component';
+import {AppBarComponent} from './app-bar.component';
+import {provideRouter, Routes} from "@angular/router";
+
+const routes: Routes = [
+  {path: '', component: {} as any},
+];
 
 describe('AppBarComponent', () => {
   let component: AppBarComponent;
@@ -8,9 +13,10 @@ describe('AppBarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppBarComponent]
+      imports: [AppBarComponent],
+      providers: [provideRouter(routes)]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(AppBarComponent);
     component = fixture.componentInstance;

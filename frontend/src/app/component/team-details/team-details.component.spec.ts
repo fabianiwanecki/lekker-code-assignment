@@ -1,6 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TeamDetailsComponent } from './team-details.component';
+import {provideRouter, Routes} from "@angular/router";
+import {provideHttpClient} from "@angular/common/http";
+
+const routes: Routes = [
+  { path: '', component: {} as any },
+];
 
 describe('TeamDetailsComponent', () => {
   let component: TeamDetailsComponent;
@@ -8,7 +14,11 @@ describe('TeamDetailsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TeamDetailsComponent]
+      imports: [TeamDetailsComponent],
+      providers: [
+        provideRouter(routes),
+        provideHttpClient(),
+      ]
     })
     .compileComponents();
 

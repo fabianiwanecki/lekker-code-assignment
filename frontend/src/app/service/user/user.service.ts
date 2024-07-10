@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {PageDto, TeamDetailedDto, TeamDto} from "../team/team.service";
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {environment} from "../../../environments/environment";
@@ -24,7 +24,7 @@ export interface UserWithRankDto {
 })
 export class UserService {
 
-  constructor(private httpClient: HttpClient) { }
+  httpClient = inject(HttpClient);
 
   fetchUsers(page: number, size: number): Observable<PageDto<UserWithRankAndTeamDto>> {
     let params = new HttpParams();
