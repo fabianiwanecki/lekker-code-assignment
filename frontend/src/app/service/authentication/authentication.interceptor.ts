@@ -22,7 +22,6 @@ export const authenticationInterceptor: HttpInterceptorFn = (req, next) => {
   });
   return next(clonedReq).pipe(
     catchError((err) => {
-      console.log(err);
       if (err.status === 403) {
         authService.logOut();
         router.navigate(['/'])

@@ -61,6 +61,23 @@ export class TeamDetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.updateTeam();
+    this.updateMemberRequests();
+  }
+
+  updateMemberRequests() {
+    const teamUuid = this.activatedRoute.snapshot.paramMap.get('id');
+
+    if (teamUuid === null) {
+      return;
+    }
+
+    this.teamService.listTeamRequests(teamUuid).subscribe({
+      next: response => this.teamRequests = response,
+    })
+  }
+
+  updateTeam() {
     const teamUuid = this.activatedRoute.snapshot.paramMap.get('id');
 
     if (teamUuid === null) {
@@ -69,10 +86,6 @@ export class TeamDetailsComponent implements OnInit {
 
     this.teamService.fetchTeamDetails(teamUuid).subscribe({
       next: response => this.teamDetails = response,
-    })
-
-    this.teamService.listTeamRequests(teamUuid).subscribe({
-      next: response => this.teamRequests = response,
     })
   }
 
@@ -139,6 +152,12 @@ export class TeamDetailsComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result !== undefined) {
         this.teamService.answerMemberRequest(teamUuid, {userUuid: user.uuid, acceptRequest: result}).subscribe({
+          next: () => {
+            this.updateMemberRequests();
+            if (result === true) {
+              this.updateTeam();
+            }
+          },
           error: err => this.answerMemberRequestError = err.error.message
         })
       }
