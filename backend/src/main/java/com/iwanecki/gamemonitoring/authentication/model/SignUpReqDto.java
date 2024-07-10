@@ -1,4 +1,4 @@
-package com.iwanecki.gamemonitoring.authentication;
+package com.iwanecki.gamemonitoring.authentication.model;
 
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;

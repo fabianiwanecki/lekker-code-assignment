@@ -1,4 +1,4 @@
-package com.iwanecki.gamemonitoring.user;
+package com.iwanecki.gamemonitoring.user.model;
 
 import com.iwanecki.gamemonitoring.team.TeamDto;
 

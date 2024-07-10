@@ -1,6 +1,7 @@
 package com.iwanecki.gamemonitoring.user;
 
 import com.iwanecki.gamemonitoring.shared.PageDto;
+import com.iwanecki.gamemonitoring.user.model.UserWithRankAndTeamDto;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;

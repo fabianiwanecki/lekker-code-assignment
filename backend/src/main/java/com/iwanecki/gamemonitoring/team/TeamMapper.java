@@ -1,6 +1,8 @@
 package com.iwanecki.gamemonitoring.team;
 
-import com.iwanecki.gamemonitoring.user.UserWithRankDto;
+import com.iwanecki.gamemonitoring.team.model.TeamDetailedDto;
+import com.iwanecki.gamemonitoring.team.model.TeamDetailedWithMembersDto;
+import com.iwanecki.gamemonitoring.user.model.UserWithRankDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

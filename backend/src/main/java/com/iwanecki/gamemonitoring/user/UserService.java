@@ -1,11 +1,17 @@
 package com.iwanecki.gamemonitoring.user;
 
 import com.iwanecki.gamemonitoring.authentication.ScoreService;
-import com.iwanecki.gamemonitoring.authentication.SignUpReqDto;
+import com.iwanecki.gamemonitoring.authentication.model.SignUpReqDto;
 import com.iwanecki.gamemonitoring.shared.PageDto;
-import com.iwanecki.gamemonitoring.team.TeamAlreadyFullException;
+import com.iwanecki.gamemonitoring.team.exception.TeamAlreadyFullException;
 import com.iwanecki.gamemonitoring.team.TeamEntity;
 import com.iwanecki.gamemonitoring.team.TeamRole;
+import com.iwanecki.gamemonitoring.user.exception.AlreadyTeamMemberException;
+import com.iwanecki.gamemonitoring.user.exception.UserAlreadyExistsException;
+import com.iwanecki.gamemonitoring.user.exception.UserNotFoundException;
+import com.iwanecki.gamemonitoring.user.model.UserDto;
+import com.iwanecki.gamemonitoring.user.model.UserWithRankAndTeamDto;
+import com.iwanecki.gamemonitoring.user.model.UserWithRankDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

@@ -1,9 +1,16 @@
 package com.iwanecki.gamemonitoring.user;
 
 import com.iwanecki.gamemonitoring.authentication.ScoreService;
-import com.iwanecki.gamemonitoring.authentication.SignUpReqDto;
+import com.iwanecki.gamemonitoring.authentication.model.SignUpReqDto;
 import com.iwanecki.gamemonitoring.shared.PageDto;
 import com.iwanecki.gamemonitoring.team.*;
+import com.iwanecki.gamemonitoring.team.exception.TeamAlreadyFullException;
+import com.iwanecki.gamemonitoring.user.exception.AlreadyTeamMemberException;
+import com.iwanecki.gamemonitoring.user.exception.UserAlreadyExistsException;
+import com.iwanecki.gamemonitoring.user.exception.UserNotFoundException;
+import com.iwanecki.gamemonitoring.user.model.UserDto;
+import com.iwanecki.gamemonitoring.user.model.UserWithRankAndTeamDto;
+import com.iwanecki.gamemonitoring.user.model.UserWithRankDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -12,10 +19,6 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.data.redis.core.ZSetOperations;
-import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -24,7 +27,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;

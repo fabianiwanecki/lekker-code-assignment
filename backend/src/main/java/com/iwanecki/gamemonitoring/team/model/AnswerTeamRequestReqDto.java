@@ -1,4 +1,4 @@
-package com.iwanecki.gamemonitoring.team;
+package com.iwanecki.gamemonitoring.team.model;
 
 import jakarta.validation.constraints.NotNull;
 

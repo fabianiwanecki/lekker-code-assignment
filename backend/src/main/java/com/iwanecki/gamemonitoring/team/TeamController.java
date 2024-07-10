@@ -1,6 +1,7 @@
 package com.iwanecki.gamemonitoring.team;
 
 import com.iwanecki.gamemonitoring.shared.PageDto;
+import com.iwanecki.gamemonitoring.team.model.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

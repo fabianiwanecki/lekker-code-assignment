@@ -1,5 +1,6 @@
 package com.iwanecki.gamemonitoring.team;
 
+import com.iwanecki.gamemonitoring.team.exception.TeamNotFoundException;
 import com.iwanecki.gamemonitoring.user.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

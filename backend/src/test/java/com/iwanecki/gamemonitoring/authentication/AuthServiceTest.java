@@ -1,6 +1,8 @@
 package com.iwanecki.gamemonitoring.authentication;
 
-import com.iwanecki.gamemonitoring.user.UserDto;
+import com.iwanecki.gamemonitoring.authentication.model.SignInReqDto;
+import com.iwanecki.gamemonitoring.authentication.model.SignInResDto;
+import com.iwanecki.gamemonitoring.user.model.UserDto;
 import com.iwanecki.gamemonitoring.user.UserService;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

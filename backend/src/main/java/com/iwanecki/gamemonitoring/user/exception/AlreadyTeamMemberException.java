@@ -1,4 +1,4 @@
-package com.iwanecki.gamemonitoring.user;
+package com.iwanecki.gamemonitoring.user.exception;
 
 public class AlreadyTeamMemberException extends RuntimeException {
 

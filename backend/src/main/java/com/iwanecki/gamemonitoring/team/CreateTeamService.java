@@ -1,6 +1,7 @@
 package com.iwanecki.gamemonitoring.team;
 
-import com.iwanecki.gamemonitoring.user.UserDto;
+import com.iwanecki.gamemonitoring.team.model.CreateTeamReqDto;
+import com.iwanecki.gamemonitoring.user.model.UserDto;
 import com.iwanecki.gamemonitoring.user.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

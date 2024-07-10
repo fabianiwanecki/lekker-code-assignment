@@ -2,15 +2,14 @@ package com.iwanecki.gamemonitoring.user;
 
 import com.iwanecki.gamemonitoring.team.TeamDto;
 import com.iwanecki.gamemonitoring.team.TeamEntity;
-import com.iwanecki.gamemonitoring.team.TeamMapper;
 import com.iwanecki.gamemonitoring.team.TeamMapperImpl;
-import org.junit.jupiter.api.BeforeEach;
+import com.iwanecki.gamemonitoring.user.model.UserWithRankAndTeamDto;
+import com.iwanecki.gamemonitoring.user.model.UserWithRankDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.UUID;

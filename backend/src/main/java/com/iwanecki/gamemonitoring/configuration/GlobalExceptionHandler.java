@@ -1,9 +1,9 @@
 package com.iwanecki.gamemonitoring.configuration;
 
-import com.iwanecki.gamemonitoring.team.*;
-import com.iwanecki.gamemonitoring.user.AlreadyTeamMemberException;
-import com.iwanecki.gamemonitoring.user.UserAlreadyExistsException;
-import com.iwanecki.gamemonitoring.user.UserNotFoundException;
+import com.iwanecki.gamemonitoring.team.exception.*;
+import com.iwanecki.gamemonitoring.user.exception.AlreadyTeamMemberException;
+import com.iwanecki.gamemonitoring.user.exception.UserAlreadyExistsException;
+import com.iwanecki.gamemonitoring.user.exception.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;

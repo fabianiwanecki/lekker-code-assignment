@@ -1,6 +1,9 @@
 package com.iwanecki.gamemonitoring.authentication;
 
-import com.iwanecki.gamemonitoring.user.UserDto;
+import com.iwanecki.gamemonitoring.authentication.model.SignInReqDto;
+import com.iwanecki.gamemonitoring.authentication.model.SignInResDto;
+import com.iwanecki.gamemonitoring.authentication.model.SignUpReqDto;
+import com.iwanecki.gamemonitoring.user.model.UserDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;

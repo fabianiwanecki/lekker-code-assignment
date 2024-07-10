@@ -1,6 +1,6 @@
-package com.iwanecki.gamemonitoring.team;
+package com.iwanecki.gamemonitoring.team.model;
 
-import com.iwanecki.gamemonitoring.user.UserWithRankDto;
+import com.iwanecki.gamemonitoring.user.model.UserWithRankDto;
 
 import java.util.List;
 import java.util.UUID;
