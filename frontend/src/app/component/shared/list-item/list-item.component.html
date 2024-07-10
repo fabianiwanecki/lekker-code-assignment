@@ -1,0 +1,17 @@
+<section class="section__list-item">
+  <section class="section__list-item-container">
+    <section class="section__leading-icon">
+      <span class="leading-icon">{{headline.charAt(0).toUpperCase()}}</span>
+    </section>
+    <section class="section__content">
+      <span class="headline">{{headline}}</span>
+      <span class="supporting-text">{{supportingText}}</span>
+    </section>
+    <section class="section__trailing-text">
+      <ng-container *ngFor="let text of trailingText">
+        <span class="trailing-text">{{text}}</span>
+      </ng-container>
+    </section>
+  </section>
+  <mat-divider></mat-divider>
+</section>

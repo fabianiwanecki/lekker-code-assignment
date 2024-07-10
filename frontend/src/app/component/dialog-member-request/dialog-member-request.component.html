@@ -1,0 +1,5 @@
+<h2 mat-dialog-title>Approve request of {{data.user.username}}?</h2>
+<mat-dialog-actions>
+  <button mat-button (click)="onDecline()">Decline</button>
+  <button mat-button cdkFocusInitial (click)="onApprove()">Approve</button>
+</mat-dialog-actions>

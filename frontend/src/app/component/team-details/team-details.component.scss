@@ -1,0 +1,33 @@
+.container__content {
+  padding: 0 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  gap: 16px;
+
+  .section__list-container {
+    display: flex;
+    padding: 0 8px;
+    flex-direction: column;
+    align-items: stretch;
+    align-self: stretch;
+  }
+
+  .button__create-member-request {
+    align-self: flex-end;
+  }
+
+  .error, .success {
+    align-self: flex-end;
+  }
+
+  .section__team-actions {
+    display: flex;
+    padding: 0 8px;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 16px;
+    align-self: stretch;
+  }
+}

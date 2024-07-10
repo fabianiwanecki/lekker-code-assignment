@@ -1,0 +1,25 @@
+.section__create-team {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+
+  .form__create-team {
+    display: flex;
+    width: auto;
+    padding: 32px 0 0 0;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+
+    mat-form-field {
+      width: 320px;
+    }
+  }
+
+  .button__create-team {
+    width: 320px;
+  }
+}

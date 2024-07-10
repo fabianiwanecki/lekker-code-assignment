@@ -1,0 +1,27 @@
+<app-app-bar headline="Create team" backButtonRouterLink="/teams"></app-app-bar>
+<section class="section__create-team">
+  <form class="form__create-team" [formGroup]="createTeamForm">
+    <mat-form-field appearance="outline" class="form-field__team-name">
+      <mat-label>Team name</mat-label>
+      <input matInput formControlName="name" [errorStateMatcher]="matcher">
+      @if ((createTeamForm.controls['name'].errors?.['minlength'] || createTeamForm.controls['name'].errors?.['maxlength'])  && !createTeamForm.controls['name'].errors?.['required']) {
+      <mat-error>Team name must be between 5 and 30 characters</mat-error>
+      }
+      @if (createTeamForm.controls['name'].errors?.['required']) {
+      <mat-error>Team name is required</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="form-field__max-members">
+      <mat-label>Maximum members</mat-label>
+      <input matInput formControlName="maxMembers" [errorStateMatcher]="matcher">
+      @if ((createTeamForm.controls['maxMembers'].errors?.['min'] || createTeamForm.controls['maxMembers'].errors?.['pattern']) && !createTeamForm.controls['maxMembers'].errors?.['required']) {
+      <mat-error>Maximum members must be 10 or higher</mat-error>
+      }
+      @if (createTeamForm.controls['maxMembers'].errors?.['required']) {
+      <mat-error>Maximum members is required</mat-error>
+      }
+    </mat-form-field>
+  </form>
+  <mat-error class="error__message" *ngIf="displayError">An error occurred. Please try again.</mat-error>
+  <button mat-flat-button class="button__create-team" (click)="createTeam()">Create Team</button>
+</section>

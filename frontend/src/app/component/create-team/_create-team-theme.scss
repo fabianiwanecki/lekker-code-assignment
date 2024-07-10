@@ -1,0 +1,16 @@
+@use 'sass:map';
+@use '@angular/material' as mat;
+
+@mixin typography($theme) {
+  .section__create-team {
+    .error__message {
+      font: mat.get-theme-typography($theme, label-large, font);
+    }
+  }
+}
+
+@mixin theme($theme) {
+  @if mat.theme-has($theme, typography) {
+    @include typography($theme);
+  }
+}

@@ -1,0 +1,40 @@
+<app-app-bar headline="Team Details" backButtonRouterLink="/teams"></app-app-bar>
+<section class="container__content">
+  <ng-container *ngIf="!authService.currentUser?.team">
+    <button mat-fab extended class="button__create-member-request" (click)="createMemberRequest()">
+      <mat-icon>person</mat-icon>
+      Create Member Request
+    </button>
+    <span class="error" *ngIf="memberRequestError.length">{{memberRequestError}}</span>
+    <span class="success" *ngIf="memberRequestSuccess">{{memberRequestSuccess}}</span>
+  </ng-container>
+  <section class="section__list-container">
+    <app-list-item-team [team]="teamDetails"></app-list-item-team>
+  </section>
+  <app-title-header title="Team Members" titleRouterLink="#"></app-title-header>
+  <section class="section__list-container">
+    <ng-container *ngFor="let member of teamDetails.members">
+      <app-list-item-user [user]="member"></app-list-item-user>
+    </ng-container>
+  </section>
+  <ng-container *ngIf="isTeamOwner()">
+    <app-title-header title="Member Requests" titleRouterLink="#"></app-title-header>
+    <section class="section__list-container">
+      <ng-container *ngFor="let request of teamRequests">
+        <app-list-item-user [user]="request.user" class="list-clickable"
+                            (click)="openRequestModal(request.user)"></app-list-item-user>
+      </ng-container>
+    </section>
+    <span class="error" *ngIf="answerMemberRequestError.length">{{answerMemberRequestError}}</span>
+    <section class="section__team-actions">
+      <button mat-fab extended class="button__edit-team" routerLink="edit-team">
+        <mat-icon>edit</mat-icon>
+        Edit Team
+      </button>
+      <button mat-fab extended class="button__delete-team" (click)="deleteTeam()">
+        <mat-icon>delete</mat-icon>
+        Delete Team
+      </button>
+    </section>
+  </ng-container>
+</section>

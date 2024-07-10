@@ -1,0 +1,26 @@
+<app-app-bar headline="Welcome {{authService.currentUser?.username}}" backButtonRouterLink="#"></app-app-bar>
+<section class="container__content">
+  <button mat-flat-button (click)="logOut()">Log out</button>
+  <ng-container *ngIf="authService.currentUser?.team">
+    <app-title-header title="Your Team" [titleRouterLink]="'/teams/' + authService.currentUser?.team?.uuid"></app-title-header>
+    <section class="section__list-container">
+      <app-list-item class="list-clickable" [headline]="authService.currentUser?.team?.name || ''" (click)="showTeamDetails(authService.currentUser?.team?.uuid || '')"></app-list-item>
+    </section>
+  </ng-container>
+  <app-title-header title="Browse Users" titleRouterLink="/users"></app-title-header>
+  <section class="section__list-container">
+    <ng-container *ngFor="let user of users">
+      <app-list-item-user [user]="user"></app-list-item-user>
+    </ng-container>
+  </section>
+  <app-title-header title="Browse Teams" titleRouterLink="/teams"></app-title-header>
+  <section class="section__list-container">
+    <ng-container *ngFor="let team of teams">
+      <app-list-item-team class="list-clickable" [team]="team" (click)="showTeamDetails(team.uuid)"></app-list-item-team>
+    </ng-container>
+  </section>
+  <a mat-fab extended="true" class="button__create-team" *ngIf="!authService.currentUser?.team" routerLink="/create-team">
+    <mat-icon>person</mat-icon>
+    Create Team
+  </a>
+</section>

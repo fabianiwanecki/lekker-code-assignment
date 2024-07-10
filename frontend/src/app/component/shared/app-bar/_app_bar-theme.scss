@@ -1,0 +1,19 @@
+@use 'sass:map';
+@use '@angular/material' as mat;
+
+@mixin typography($theme) {
+  .section__app-bar-container {
+    .headline {
+      font: mat.get-theme-typography($theme, headline-small, font);
+    }
+    .back-button__title {
+      font: mat.get-theme-typography($theme, title-large, font);
+    }
+  }
+}
+
+@mixin theme($theme) {
+  @if mat.theme-has($theme, typography) {
+    @include typography($theme);
+  }
+}

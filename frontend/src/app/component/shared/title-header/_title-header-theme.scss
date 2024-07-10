@@ -1,0 +1,16 @@
+@use 'sass:map';
+@use '@angular/material' as mat;
+
+@mixin typography($theme) {
+  .section__title-header {
+    .title {
+      font: mat.get-theme-typography($theme, title-large, font);
+    }
+  }
+}
+
+@mixin theme($theme) {
+  @if mat.theme-has($theme, typography) {
+    @include typography($theme);
+  }
+}

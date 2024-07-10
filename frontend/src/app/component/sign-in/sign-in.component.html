@@ -1,0 +1,22 @@
+<section class="section__sign-in">
+  <span class="title">Sign In</span>
+  <form class="form__sign-in" [formGroup]="signInForm">
+    <mat-form-field appearance="outline" class="form-field__username">
+      <mat-label>Username</mat-label>
+      <input matInput formControlName="username" [errorStateMatcher]="matcher">
+      @if (signInForm.controls['username'].errors?.['required']) {
+      <mat-error>Username is required</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="form-field__password">
+      <mat-label>Password</mat-label>
+      <input type="password" matInput formControlName="password" [errorStateMatcher]="matcher">
+      @if (signInForm.controls['password'].errors?.['required']) {
+      <mat-error>Password is required</mat-error>
+      }
+    </mat-form-field>
+  </form>
+  <button mat-flat-button class="button__sign-in" (click)="signIn()">Sign In</button>
+  <mat-error class="error__invalid-credentials" *ngIf="displayInvalidCredentials">Invalid credentials. Please try again!</mat-error>
+  <a mat-button class="button__sign-up" routerLink="/sign-up">New user? Sign up here!</a>
+</section>

@@ -1,0 +1,28 @@
+<section class="section__sign-up">
+  <span class="title">Sign Up</span>
+  <form class="form__sign-up" [formGroup]="signUpForm">
+    <mat-form-field appearance="outline" class="form-field__username">
+      <mat-label>Username</mat-label>
+      <input matInput [errorStateMatcher]="matcher" formControlName="username">
+      @if ((signUpForm.controls['username'].errors?.['minlength'] || signUpForm.controls['username'].errors?.['maxlength'])  && !signUpForm.controls['username'].errors?.['required']) {
+      <mat-error>Username must be between 5 and 30 characters</mat-error>
+      }
+      @if (signUpForm.controls['username'].errors?.['required']) {
+      <mat-error>Username is required</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="form-field__password">
+      <mat-label>Password</mat-label>
+      <input type="password" matInput [errorStateMatcher]="matcher" formControlName="password">
+      @if ((signUpForm.controls['password'].errors?.['minlength'] || signUpForm.controls['password'].errors?.['maxlength'])  && !signUpForm.controls['password'].errors?.['required']) {
+      <mat-error>Password must be between 8 and 50 characters</mat-error>
+      }
+      @if (signUpForm.controls['password'].errors?.['required']) {
+      <mat-error>Password is required</mat-error>
+      }
+    </mat-form-field>
+  </form>
+  <button mat-flat-button class="button__sign-up" (click)="signUp()">Sign Up</button>
+  <mat-error class="error__message" *ngIf="displayError">An error occurred. Please try again.</mat-error>
+  <a mat-button class="button__sign-in" routerLink="/sign-in">Already a member? Sign in here!</a>
+</section>

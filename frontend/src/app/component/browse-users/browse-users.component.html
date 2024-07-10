@@ -1,0 +1,15 @@
+<app-app-bar headline="Browse Users" backButtonRouterLink="/dashboard"></app-app-bar>
+<section class="container__content">
+  <section class="section__list-container">
+    <ng-container *ngFor="let user of users">
+      <app-list-item-user [user]="user"></app-list-item-user>
+    </ng-container>
+    <mat-paginator [length]="totalElements"
+                   [pageSize]="pageSize"
+                   [pageIndex]="page"
+                   [pageSizeOptions]="[5, 10, 25, 100]"
+                   (page)="handlePageEvent($event)"
+                   aria-label="Select page">
+    </mat-paginator>
+  </section>
+</section>

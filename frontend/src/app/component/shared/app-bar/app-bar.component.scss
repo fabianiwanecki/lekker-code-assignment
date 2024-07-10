@@ -1,0 +1,30 @@
+.section__app-bar-container {
+  display: flex;
+  width: 100%;
+  padding-bottom: 24px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+
+  .section__navigation {
+    display: flex;
+    padding: 8px 12px 0 12px;
+    justify-content: space-between;
+    align-items: flex-start;
+    align-self: stretch;
+
+    .section__back-button {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+
+  .section__headline {
+    display: flex;
+    padding: 0 24px;
+    align-items: flex-start;
+    gap: 10px;
+    align-self: stretch;
+  }
+}

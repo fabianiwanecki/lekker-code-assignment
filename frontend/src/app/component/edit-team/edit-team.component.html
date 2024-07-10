@@ -1,0 +1,27 @@
+<app-app-bar headline="Edit team" backButtonRouterLink="/teams"></app-app-bar>
+<section class="section__edit-team">
+  <form class="form__edit-team" [formGroup]="editTeamForm">
+    <mat-form-field appearance="outline" class="form-field__team-name">
+      <mat-label>Team name</mat-label>
+      <input matInput formControlName="name" [errorStateMatcher]="matcher">
+      @if ((editTeamForm.controls['name'].errors?.['minlength'] || editTeamForm.controls['name'].errors?.['maxlength'])  && !editTeamForm.controls['name'].errors?.['required']) {
+      <mat-error>Team name must be between 5 and 30 characters</mat-error>
+      }
+      @if (editTeamForm.controls['name'].errors?.['required']) {
+      <mat-error>Team name is required</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="form-field__max-members">
+      <mat-label>Maximum members</mat-label>
+      <input matInput formControlName="maxMembers" [errorStateMatcher]="matcher">
+      @if ((editTeamForm.controls['maxMembers'].errors?.['min'] || editTeamForm.controls['maxMembers'].errors?.['pattern']) && !editTeamForm.controls['maxMembers'].errors?.['required']) {
+      <mat-error>Maximum members must be 10 or higher</mat-error>
+      }
+      @if (editTeamForm.controls['maxMembers'].errors?.['required']) {
+      <mat-error>Maximum members is required</mat-error>
+      }
+    </mat-form-field>
+  </form>
+  <mat-error class="error__message" *ngIf="displayError">An error occurred. Please try again.</mat-error>
+  <button mat-flat-button class="button__edit-team" (click)="updateTeam()">Edit Team</button>
+</section>
